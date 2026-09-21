@@ -123,8 +123,7 @@
 
 
 <script setup lang="ts">
-
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
 
@@ -132,44 +131,68 @@ const router = useRouter()
 
 const email = ref('')
 const password = ref('')
-
 const loading = ref(false)
 const errorMessage = ref('')
 
+/*
+|--------------------------------------------------------------------------
+| CHECK EXISTING SESSION
+|--------------------------------------------------------------------------
+| If the user is already logged in and visits /login,
+| send them directly to the dashboard.
+*/
+onMounted(async () => {
+  const { data } = await supabase.auth.getSession()
 
+  if (data.session) {
+    router.replace('/dashboard')
+  }
+})
+
+/*
+|--------------------------------------------------------------------------
+| LOGIN
+|--------------------------------------------------------------------------
+*/
 const loginUser = async () => {
+  if (loading.value) return
 
   errorMessage.value = ''
   loading.value = true
 
   try {
-
-    const { error } =
+    const { data, error } =
       await supabase.auth.signInWithPassword({
         email: email.value.trim(),
         password: password.value
       })
 
     if (error) {
-      throw error
+      errorMessage.value =
+        'Invalid email or password. Please check your details and try again.'
+      return
     }
 
-    router.push('/dashboard')
+    if (!data.session) {
+      errorMessage.value =
+        'Login was not completed. Please try again.'
+      return
+    }
+
+    // Successful login
+    await router.replace('/dashboard')
 
   } catch (error: any) {
+    console.error('Login error:', error)
 
     errorMessage.value =
       error?.message ||
       'Unable to login. Please check your email and password.'
 
   } finally {
-
     loading.value = false
-
   }
-
 }
-
 </script>
 
 
