@@ -143,6 +143,7 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -160,18 +161,21 @@ const errorMessage = ref('')
 const successMessage = ref('')
 
 const registerUser = async () => {
+  if (loading.value) return
+
   errorMessage.value = ''
   successMessage.value = ''
   loading.value = true
 
   try {
     const { data, error } = await supabase.auth.signUp({
-      email: email.value,
+      email: email.value.trim(),
       password: password.value,
+
       options: {
         data: {
-          full_name: fullName.value,
-          phone: phone.value
+          full_name: fullName.value.trim(),
+          phone: phone.value.trim()
         }
       }
     })
@@ -184,24 +188,38 @@ const registerUser = async () => {
       throw new Error('Unable to create account.')
     }
 
-    successMessage.value =
-      'Account created successfully!'
+    /*
+     * If Supabase returned a session, the user is already authenticated.
+     */
+    if (data.session) {
+      successMessage.value =
+        'Account created successfully!'
 
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 1000)
+      setTimeout(() => {
+        router.replace('/dashboard')
+      }, 800)
+
+      return
+    }
+
+    /*
+     * No session means email confirmation is probably enabled.
+     */
+    successMessage.value =
+      'Account created successfully! Please check your email and verify your account before logging in.'
 
   } catch (error: any) {
+    console.error('Registration error:', error)
 
     errorMessage.value =
-      error.message || 'Something went wrong.'
+      error?.message ||
+      'Something went wrong while creating your account.'
 
   } finally {
     loading.value = false
   }
 }
 </script>
-
 <style scoped>
 
 /* =================================
