@@ -1,6 +1,5 @@
 <template>
   <div class="login-page">
-
     <div class="login-container">
 
       <!-- LEFT SIDE -->
@@ -47,19 +46,53 @@
 
           <!-- EMAIL -->
           <div class="form-group">
+
             <label>Email Address</label>
 
             <input
               v-model="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="Enter your Gmail address"
               required
             />
+
+          </div>
+
+
+          <!-- ACCOUNT SELECTOR -->
+          <div class="form-group">
+
+            <label>MufasirPay Account</label>
+
+            <select
+              v-model="accountNumber"
+              required
+            >
+
+              <option value="1">
+                Account 1
+              </option>
+
+              <option value="2">
+                Account 2
+              </option>
+
+              <option value="3">
+                Account 3
+              </option>
+
+            </select>
+
+            <small class="account-hint">
+              Select the account you want to access.
+            </small>
+
           </div>
 
 
           <!-- PASSWORD -->
           <div class="form-group">
+
             <label>Password</label>
 
             <input
@@ -68,6 +101,7 @@
               placeholder="Enter your password"
               required
             />
+
           </div>
 
 
@@ -86,6 +120,7 @@
             class="login-button"
             :disabled="loading"
           >
+
             <span v-if="loading">
               Logging in...
             </span>
@@ -93,6 +128,7 @@
             <span v-else>
               Login
             </span>
+
           </button>
 
         </form>
@@ -100,12 +136,15 @@
 
         <!-- REGISTER -->
         <p class="register-text">
+
           Don't have an account?
 
           <router-link to="/register">
             Create Account
           </router-link>
+
         </p>
+
 
         <router-link
           to="/"
@@ -117,82 +156,161 @@
       </div>
 
     </div>
-
   </div>
 </template>
 
 
 <script setup lang="ts">
+
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
 
+
 const router = useRouter()
+
 
 const email = ref('')
 const password = ref('')
+
+const accountNumber = ref('1')
+
 const loading = ref(false)
 const errorMessage = ref('')
+
+
+/*
+|--------------------------------------------------------------------------
+| CREATE THE ACTUAL SUPABASE EMAIL
+|--------------------------------------------------------------------------
+|
+| Account 1
+| example@gmail.com
+|
+| Account 2
+| example+2@gmail.com
+|
+| Account 3
+| example+3@gmail.com
+|
+*/
+
+const getAccountEmail = () => {
+
+  const cleanEmail = email.value
+    .trim()
+    .toLowerCase()
+
+  if (accountNumber.value === '1') {
+    return cleanEmail
+  }
+
+  const [username, domain] = cleanEmail.split('@')
+
+  if (!username || !domain) {
+    return cleanEmail
+  }
+
+  return `${username}+${accountNumber.value}@${domain}`
+}
+
 
 /*
 |--------------------------------------------------------------------------
 | CHECK EXISTING SESSION
 |--------------------------------------------------------------------------
-| If the user is already logged in and visits /login,
-| send them directly to the dashboard.
 */
+
 onMounted(async () => {
+
   const { data } = await supabase.auth.getSession()
 
   if (data.session) {
+
     router.replace('/dashboard')
+
   }
+
 })
+
 
 /*
 |--------------------------------------------------------------------------
 | LOGIN
 |--------------------------------------------------------------------------
 */
+
 const loginUser = async () => {
+
   if (loading.value) return
 
   errorMessage.value = ''
+
   loading.value = true
 
   try {
+
+    const accountEmail = getAccountEmail()
+
+
     const { data, error } =
       await supabase.auth.signInWithPassword({
-        email: email.value.trim(),
+
+        email: accountEmail,
+
         password: password.value
+
       })
 
+
     if (error) {
+
+      console.error('Login error:', error)
+
       errorMessage.value =
-        'Invalid email or password. Please check your details and try again.'
+        'Invalid email, password, or account number. Please check your details and try again.'
+
       return
+
     }
+
 
     if (!data.session) {
+
       errorMessage.value =
         'Login was not completed. Please try again.'
+
       return
+
     }
 
-    // Successful login
+
+    /*
+    |----------------------------------------------------------------------
+    | SUCCESSFUL LOGIN
+    |----------------------------------------------------------------------
+    */
+
     await router.replace('/dashboard')
 
+
   } catch (error: any) {
+
     console.error('Login error:', error)
 
     errorMessage.value =
       error?.message ||
-      'Unable to login. Please check your email and password.'
+      'Unable to login. Please check your details and try again.'
+
 
   } finally {
+
     loading.value = false
+
   }
+
 }
+
 </script>
 
 
@@ -203,14 +321,25 @@ const loginUser = async () => {
 ================================= */
 
 .login-page {
+
   min-height: 100vh;
+
   background:
-    radial-gradient(circle at top left, rgba(24, 184, 117, 0.08), transparent 35%),
+    radial-gradient(
+      circle at top left,
+      rgba(24, 184, 117, 0.08),
+      transparent 35%
+    ),
     #f7faf8;
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
+
   padding: 30px;
+
 }
 
 
@@ -219,18 +348,27 @@ const loginUser = async () => {
 ================================= */
 
 .login-container {
+
   width: 100%;
+
   max-width: 1050px;
+
   min-height: 650px;
+
   display: grid;
+
   grid-template-columns: 1fr 1fr;
+
   background: #ffffff;
+
   border-radius: 28px;
+
   overflow: hidden;
 
   box-shadow:
     0 30px 80px rgba(6, 59, 43, 0.12),
     0 8px 25px rgba(6, 59, 43, 0.05);
+
 }
 
 
@@ -239,7 +377,9 @@ const loginUser = async () => {
 ================================= */
 
 .login-brand {
+
   position: relative;
+
   overflow: hidden;
 
   background:
@@ -256,37 +396,61 @@ const loginUser = async () => {
     );
 
   color: white;
+
   padding: 70px 55px;
 
   display: flex;
+
   flex-direction: column;
+
   justify-content: center;
+
 }
 
 
 /* Decorative background glow */
 
 .login-brand::before {
+
   content: "";
+
   position: absolute;
+
   width: 260px;
+
   height: 260px;
+
   border-radius: 50%;
+
   right: -90px;
+
   bottom: -90px;
+
   background: rgba(24, 184, 117, 0.12);
+
   filter: blur(2px);
+
 }
 
+
 .login-brand::after {
+
   content: "";
+
   position: absolute;
+
   width: 180px;
+
   height: 180px;
+
   border-radius: 50%;
+
   left: -90px;
+
   top: -80px;
+
   background: rgba(255, 255, 255, 0.035);
+
 }
 
 
@@ -296,11 +460,15 @@ const loginUser = async () => {
 
 .brand-logo,
 .mobile-logo {
+
   position: relative;
+
   overflow: hidden;
 
   width: 62px;
+
   height: 62px;
+
   min-width: 62px;
 
   border-radius: 18px;
@@ -317,11 +485,15 @@ const loginUser = async () => {
   color: #063b2b;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   font-size: 29px;
+
   font-weight: 950;
+
   letter-spacing: -2px;
 
   box-shadow:
@@ -329,6 +501,7 @@ const loginUser = async () => {
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
 
   z-index: 2;
+
 }
 
 
@@ -336,33 +509,43 @@ const loginUser = async () => {
 
 .brand-logo::before,
 .mobile-logo::before {
+
   content: "";
+
   position: absolute;
 
   width: 34px;
+
   height: 7px;
 
   top: 12px;
+
   left: 15px;
 
   border-radius: 50%;
 
   border-top: 3px solid rgba(255, 255, 255, 0.95);
+
   border-left: 2px solid rgba(255, 255, 255, 0.6);
 
   transform: rotate(-15deg);
+
 }
 
 
 .brand-logo::after,
 .mobile-logo::after {
+
   content: "";
+
   position: absolute;
 
   width: 28px;
+
   height: 10px;
 
   right: 7px;
+
   bottom: 9px;
 
   border-radius: 50%;
@@ -370,6 +553,7 @@ const loginUser = async () => {
   background: rgba(4, 47, 36, 0.28);
 
   transform: rotate(-25deg);
+
 }
 
 
@@ -378,21 +562,28 @@ const loginUser = async () => {
 ================================= */
 
 .login-brand h1 {
+
   position: relative;
+
   z-index: 2;
 
   font-size: 42px;
+
   line-height: 1.1;
 
   margin: 30px 0 15px;
 
   font-weight: 900;
+
   letter-spacing: -1.5px;
+
 }
 
 
 .login-brand p {
+
   position: relative;
+
   z-index: 2;
 
   max-width: 420px;
@@ -402,6 +593,7 @@ const loginUser = async () => {
   color: #d8f5e8;
 
   font-size: 15px;
+
 }
 
 
@@ -410,24 +602,32 @@ const loginUser = async () => {
 ================================= */
 
 .brand-feature {
+
   position: relative;
+
   z-index: 2;
 
   margin-top: 24px;
 
   display: flex;
+
   align-items: center;
 
   gap: 12px;
 
   color: #eefcf6;
+
   font-size: 14px;
+
   font-weight: 600;
+
 }
 
 
 .brand-feature span {
+
   width: 27px;
+
   height: 27px;
 
   flex-shrink: 0;
@@ -439,10 +639,13 @@ const loginUser = async () => {
   border: 1px solid rgba(255, 255, 255, 0.15);
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   color: #baf5d8;
+
 }
 
 
@@ -451,20 +654,26 @@ const loginUser = async () => {
 ================================= */
 
 .login-card {
+
   padding: 70px 55px;
 
   display: flex;
+
   flex-direction: column;
+
   justify-content: center;
 
   background: #ffffff;
+
 }
 
 
 /* Hidden on desktop */
 
 .mobile-logo {
+
   display: none;
+
 }
 
 
@@ -473,25 +682,32 @@ const loginUser = async () => {
 ================================= */
 
 .login-card h2 {
+
   color: #10271d;
 
   font-size: 30px;
+
   line-height: 1.2;
 
   margin: 0 0 8px;
 
   font-weight: 900;
+
   letter-spacing: -0.6px;
+
 }
 
 
 .subtitle {
+
   color: #6b7b73;
 
   margin-bottom: 35px;
 
   font-size: 14px;
+
   line-height: 1.6;
+
 }
 
 
@@ -500,11 +716,14 @@ const loginUser = async () => {
 ================================= */
 
 .form-group {
+
   margin-bottom: 20px;
+
 }
 
 
 .form-group label {
+
   display: block;
 
   margin-bottom: 8px;
@@ -512,12 +731,17 @@ const loginUser = async () => {
   color: #1c3429;
 
   font-size: 14px;
+
   font-weight: 700;
+
 }
 
 
-.form-group input {
+.form-group input,
+.form-group select {
+
   width: 100%;
+
   box-sizing: border-box;
 
   padding: 15px 16px;
@@ -538,26 +762,61 @@ const loginUser = async () => {
     border-color 0.2s ease,
     box-shadow 0.2s ease,
     background 0.2s ease;
+
 }
 
 
 .form-group input::placeholder {
+
   color: #9aa9a2;
+
 }
 
 
-.form-group input:hover {
+.form-group input:hover,
+.form-group select:hover {
+
   border-color: #b8d7c9;
+
 }
 
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
+
   border-color: #0ea96a;
 
   background: #ffffff;
 
   box-shadow:
     0 0 0 3px rgba(14, 169, 106, 0.11);
+
+}
+
+
+.form-group select {
+
+  cursor: pointer;
+
+  appearance: auto;
+
+}
+
+
+/* =================================
+   ACCOUNT HINT
+================================= */
+
+.account-hint {
+
+  display: block;
+
+  margin-top: 7px;
+
+  color: #84938c;
+
+  font-size: 12px;
+
 }
 
 
@@ -566,6 +825,7 @@ const loginUser = async () => {
 ================================= */
 
 .message {
+
   padding: 13px 15px;
 
   border-radius: 12px;
@@ -573,16 +833,20 @@ const loginUser = async () => {
   margin-bottom: 18px;
 
   font-size: 14px;
+
   line-height: 1.5;
+
 }
 
 
 .error {
+
   background: #fff1f2;
 
   border: 1px solid #ffd5dc;
 
   color: #be123c;
+
 }
 
 
@@ -591,6 +855,7 @@ const loginUser = async () => {
 ================================= */
 
 .login-button {
+
   width: 100%;
 
   padding: 15px 18px;
@@ -621,10 +886,12 @@ const loginUser = async () => {
 
   box-shadow:
     0 10px 22px rgba(14, 169, 106, 0.18);
+
 }
 
 
 .login-button:hover {
+
   background:
     linear-gradient(
       135deg,
@@ -636,15 +903,19 @@ const loginUser = async () => {
 
   box-shadow:
     0 14px 28px rgba(14, 169, 106, 0.24);
+
 }
 
 
 .login-button:active {
+
   transform: translateY(0);
+
 }
 
 
 .login-button:disabled {
+
   opacity: 0.7;
 
   cursor: not-allowed;
@@ -652,6 +923,7 @@ const loginUser = async () => {
   transform: none;
 
   box-shadow: none;
+
 }
 
 
@@ -660,6 +932,7 @@ const loginUser = async () => {
 ================================= */
 
 .register-text {
+
   margin-top: 25px;
 
   text-align: center;
@@ -667,10 +940,12 @@ const loginUser = async () => {
   color: #718079;
 
   font-size: 14px;
+
 }
 
 
 .register-text a {
+
   color: #0a8754;
 
   font-weight: 800;
@@ -678,11 +953,14 @@ const loginUser = async () => {
   text-decoration: none;
 
   transition: color 0.2s ease;
+
 }
 
 
 .register-text a:hover {
+
   color: #063b2b;
+
 }
 
 
@@ -691,6 +969,7 @@ const loginUser = async () => {
 ================================= */
 
 .back-home {
+
   margin-top: 18px;
 
   text-align: center;
@@ -704,11 +983,14 @@ const loginUser = async () => {
   transition:
     color 0.2s ease,
     transform 0.2s ease;
+
 }
 
 
 .back-home:hover {
+
   color: #0a8754;
+
 }
 
 
@@ -719,33 +1001,45 @@ const loginUser = async () => {
 @media (max-width: 800px) {
 
   .login-page {
+
     padding: 20px;
+
   }
 
   .login-container {
+
     grid-template-columns: 1fr;
 
     min-height: auto;
 
     border-radius: 22px;
+
   }
 
   .login-brand {
+
     display: none;
+
   }
 
   .login-card {
+
     padding: 45px 30px;
+
   }
 
   .mobile-logo {
+
     display: flex;
 
     margin-bottom: 25px;
+
   }
 
   .login-card h2 {
+
     font-size: 27px;
+
   }
 
 }
@@ -758,37 +1052,54 @@ const loginUser = async () => {
 @media (max-width: 480px) {
 
   .login-page {
+
     padding: 14px;
+
   }
 
   .login-container {
+
     border-radius: 18px;
+
   }
 
   .login-card {
+
     padding: 35px 22px;
+
   }
 
   .mobile-logo {
+
     width: 56px;
+
     height: 56px;
+
     min-width: 56px;
 
     border-radius: 16px;
 
     font-size: 26px;
+
   }
 
   .login-card h2 {
+
     font-size: 25px;
+
   }
 
   .subtitle {
+
     margin-bottom: 28px;
+
   }
 
-  .form-group input {
+  .form-group input,
+  .form-group select {
+
     padding: 14px;
+
   }
 
 }

@@ -2,12 +2,14 @@
   <div class="auth-page">
 
     <div class="auth-left">
+
       <div class="brand">
         <div class="brand-icon">M</div>
         <span>Mufasir<span>Pay</span></span>
       </div>
 
       <div class="auth-message">
+
         <span>WELCOME TO MUFASIRPAY</span>
 
         <h1>
@@ -21,6 +23,7 @@
         </p>
 
         <div class="benefits">
+
           <div>
             <b>✓</b>
             <span>Secure digital wallet</span>
@@ -35,9 +38,13 @@
             <b>✓</b>
             <span>Easy transaction tracking</span>
           </div>
+
         </div>
+
       </div>
+
     </div>
+
 
     <div class="auth-right">
 
@@ -48,14 +55,23 @@
           <span>Mufasir<span>Pay</span></span>
         </div>
 
+
         <div class="form-heading">
+
           <h2>Create your account</h2>
-          <p>Enter your details to get started.</p>
+
+          <p>
+            Enter your details to get started.
+          </p>
+
         </div>
+
 
         <form @submit.prevent="registerUser">
 
+          <!-- FULL NAME -->
           <div class="input-group">
+
             <label>Full Name</label>
 
             <input
@@ -64,20 +80,63 @@
               placeholder="Enter your full name"
               required
             />
+
           </div>
 
+
+          <!-- EMAIL -->
           <div class="input-group">
+
             <label>Email Address</label>
 
             <input
               v-model="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder="you@gmail.com"
               required
             />
+
+            <small class="input-hint">
+              Use your normal Gmail address.
+            </small>
+
           </div>
 
+
+          <!-- ACCOUNT -->
           <div class="input-group">
+
+            <label>MufasirPay Account</label>
+
+            <select
+              v-model="accountNumber"
+              required
+            >
+
+              <option value="1">
+                Account 1
+              </option>
+
+              <option value="2">
+                Account 2
+              </option>
+
+              <option value="3">
+                Account 3
+              </option>
+
+            </select>
+
+            <small class="input-hint">
+              You can create up to 3 test accounts using the same Gmail.
+            </small>
+
+          </div>
+
+
+          <!-- PHONE -->
+          <div class="input-group">
+
             <label>Phone Number</label>
 
             <input
@@ -86,9 +145,13 @@
               placeholder="08012345678"
               required
             />
+
           </div>
 
+
+          <!-- PASSWORD -->
           <div class="input-group">
+
             <label>Password</label>
 
             <input
@@ -98,8 +161,11 @@
               minlength="6"
               required
             />
+
           </div>
 
+
+          <!-- ERROR -->
           <div
             v-if="errorMessage"
             class="error-message"
@@ -107,6 +173,8 @@
             {{ errorMessage }}
           </div>
 
+
+          <!-- SUCCESS -->
           <div
             v-if="successMessage"
             class="success-message"
@@ -114,25 +182,36 @@
             {{ successMessage }}
           </div>
 
+
+          <!-- BUTTON -->
           <button
             type="submit"
             class="register-button"
             :disabled="loading"
           >
+
             {{ loading ? 'Creating account...' : 'Create Account →' }}
+
           </button>
 
         </form>
 
+
         <p class="login-text">
+
           Already have an account?
 
           <router-link to="/login">
             Log in
           </router-link>
+
         </p>
 
-        <router-link to="/" class="back-home">
+
+        <router-link
+          to="/"
+          class="back-home"
+        >
           ← Back to home
         </router-link>
 
@@ -145,81 +224,259 @@
 
 
 <script setup lang="ts">
+
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
 
+
 const router = useRouter()
+
 
 const fullName = ref('')
 const email = ref('')
 const phone = ref('')
 const password = ref('')
 
+const accountNumber = ref('1')
+
 const loading = ref(false)
+
 const errorMessage = ref('')
 const successMessage = ref('')
 
+
+/*
+|--------------------------------------------------------------------------
+| CREATE ACCOUNT EMAIL
+|--------------------------------------------------------------------------
+|
+| Account 1:
+| example@gmail.com
+|
+| Account 2:
+| example+2@gmail.com
+|
+| Account 3:
+| example+3@gmail.com
+|
+*/
+
+const getAccountEmail = () => {
+
+  const cleanEmail = email.value
+    .trim()
+    .toLowerCase()
+
+
+  /*
+  |----------------------------------------------------------------------
+  | Account 1
+  |----------------------------------------------------------------------
+  */
+
+  if (accountNumber.value === '1') {
+
+    return cleanEmail
+
+  }
+
+
+  /*
+  |----------------------------------------------------------------------
+  | Account 2 / Account 3
+  |----------------------------------------------------------------------
+  */
+
+  const [username, domain] = cleanEmail.split('@')
+
+
+  if (!username || !domain) {
+
+    return cleanEmail
+
+  }
+
+
+  return `${username}+${accountNumber.value}@${domain}`
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| REGISTER USER
+|--------------------------------------------------------------------------
+*/
+
 const registerUser = async () => {
+
   if (loading.value) return
+
 
   errorMessage.value = ''
   successMessage.value = ''
+
   loading.value = true
 
-  try {
-    const { data, error } = await supabase.auth.signUp({
-      email: email.value.trim(),
-      password: password.value,
 
-      options: {
-        data: {
-          full_name: fullName.value.trim(),
-          phone: phone.value.trim()
+  try {
+
+    /*
+    |----------------------------------------------------------------------
+    | Generate actual Supabase email
+    |----------------------------------------------------------------------
+    */
+
+    const accountEmail = getAccountEmail()
+
+
+    console.log(
+      'Creating MufasirPay account:',
+      accountNumber.value,
+      accountEmail
+    )
+
+
+    /*
+    |----------------------------------------------------------------------
+    | CREATE SUPABASE ACCOUNT
+    |----------------------------------------------------------------------
+    */
+
+    const { data, error } =
+      await supabase.auth.signUp({
+
+        email: accountEmail,
+
+        password: password.value,
+
+        options: {
+
+          data: {
+
+            full_name: fullName.value.trim(),
+
+            phone: phone.value.trim(),
+
+            account_number: accountNumber.value,
+
+            base_email: email.value
+              .trim()
+              .toLowerCase()
+
+          }
+
         }
-      }
-    })
+
+      })
+
+
+    /*
+    |----------------------------------------------------------------------
+    | SUPABASE ERROR
+    |----------------------------------------------------------------------
+    */
 
     if (error) {
+
       throw error
+
     }
+
+
+    /*
+    |----------------------------------------------------------------------
+    | USER WAS NOT CREATED
+    |----------------------------------------------------------------------
+    */
 
     if (!data.user) {
-      throw new Error('Unable to create account.')
+
+      throw new Error(
+        'Unable to create account.'
+      )
+
     }
 
+
     /*
-     * If Supabase returned a session, the user is already authenticated.
-     */
+    |----------------------------------------------------------------------
+    | USER CREATED + SESSION AVAILABLE
+    |----------------------------------------------------------------------
+    */
+
     if (data.session) {
+
       successMessage.value =
-        'Account created successfully!'
+        `Account ${accountNumber.value} created successfully!`
+
 
       setTimeout(() => {
+
         router.replace('/dashboard')
+
       }, 800)
 
+
       return
+
     }
 
+
     /*
-     * No session means email confirmation is probably enabled.
-     */
+    |----------------------------------------------------------------------
+    | EMAIL CONFIRMATION ENABLED
+    |----------------------------------------------------------------------
+    */
+
     successMessage.value =
-      'Account created successfully! Please check your email and verify your account before logging in.'
+      `Account ${accountNumber.value} created successfully! Please check your Gmail and verify your account before logging in.`
+
 
   } catch (error: any) {
-    console.error('Registration error:', error)
 
-    errorMessage.value =
-      error?.message ||
-      'Something went wrong while creating your account.'
+    console.error(
+      'Registration error:',
+      error
+    )
+
+
+    /*
+    |----------------------------------------------------------------------
+    | FRIENDLIER ERROR MESSAGES
+    |----------------------------------------------------------------------
+    */
+
+    if (
+      error?.message
+        ?.toLowerCase()
+        ?.includes('already registered')
+    ) {
+
+      errorMessage.value =
+        `Account ${accountNumber.value} already exists. Please select another account or log in.`
+
+    } else {
+
+      errorMessage.value =
+        error?.message ||
+        'Something went wrong while creating your account.'
+
+    }
+
 
   } finally {
+
     loading.value = false
+
   }
+
 }
+
 </script>
+
+
 <style scoped>
 
 /* =================================
@@ -227,8 +484,11 @@ const registerUser = async () => {
 ================================= */
 
 .auth-page {
+
   min-height: 100vh;
+
   display: grid;
+
   grid-template-columns: 1fr 1fr;
 
   background:
@@ -238,6 +498,7 @@ const registerUser = async () => {
       transparent 32%
     ),
     #f7faf8;
+
 }
 
 
@@ -246,7 +507,9 @@ const registerUser = async () => {
 ================================= */
 
 .auth-left {
+
   position: relative;
+
   overflow: hidden;
 
   background:
@@ -267,43 +530,53 @@ const registerUser = async () => {
   padding: 55px 9%;
 
   display: flex;
+
   flex-direction: column;
+
 }
 
 
 /* Decorative circles */
 
 .auth-left::before {
+
   content: "";
 
   position: absolute;
 
   width: 300px;
+
   height: 300px;
 
   right: -110px;
+
   bottom: -110px;
 
   border-radius: 50%;
 
   background: rgba(24, 184, 117, 0.12);
+
 }
 
 
 .auth-left::after {
+
   content: "";
 
   position: absolute;
 
   width: 180px;
+
   height: 180px;
 
   left: -90px;
+
   top: -70px;
 
   border-radius: 50%;
 
   background: rgba(255, 255, 255, 0.035);
+
 }
 
 
@@ -313,24 +586,32 @@ const registerUser = async () => {
 
 .brand,
 .mobile-brand {
+
   position: relative;
+
   z-index: 2;
 
   display: flex;
+
   align-items: center;
 
   gap: 10px;
 
   font-size: 21px;
+
   font-weight: 900;
+
 }
 
 
 .brand-icon {
+
   position: relative;
+
   overflow: hidden;
 
   width: 40px;
+
   height: 40px;
 
   flex-shrink: 0;
@@ -349,50 +630,61 @@ const registerUser = async () => {
   color: #063b2b;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   font-weight: 950;
+
   font-size: 20px;
+
   letter-spacing: -2px;
 
   box-shadow:
     0 9px 22px rgba(6, 59, 43, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
 }
 
 
-/* Logo decorative strokes */
-
 .brand-icon::before {
+
   content: "";
 
   position: absolute;
 
   width: 25px;
+
   height: 6px;
 
   top: 8px;
+
   left: 9px;
 
   border-radius: 50%;
 
   border-top: 3px solid rgba(255, 255, 255, 0.95);
+
   border-left: 2px solid rgba(255, 255, 255, 0.55);
 
   transform: rotate(-15deg);
+
 }
 
 
 .brand-icon::after {
+
   content: "";
 
   position: absolute;
 
   width: 21px;
+
   height: 7px;
 
   right: 5px;
+
   bottom: 6px;
 
   border-radius: 50%;
@@ -400,12 +692,15 @@ const registerUser = async () => {
   background: rgba(4, 47, 36, 0.28);
 
   transform: rotate(-25deg);
+
 }
 
 
 .brand span span,
 .mobile-brand span span {
+
   color: #a9edc9;
+
 }
 
 
@@ -414,16 +709,20 @@ const registerUser = async () => {
 ================================= */
 
 .auth-message {
+
   position: relative;
+
   z-index: 2;
 
   max-width: 520px;
 
   margin: auto 0;
+
 }
 
 
 .auth-message > span {
+
   font-size: 11px;
 
   font-weight: 800;
@@ -431,10 +730,12 @@ const registerUser = async () => {
   letter-spacing: 1.5px;
 
   color: #bcefd5;
+
 }
 
 
 .auth-message h1 {
+
   font-size: clamp(45px, 5vw, 70px);
 
   line-height: 1.02;
@@ -444,17 +745,21 @@ const registerUser = async () => {
   margin: 18px 0 25px;
 
   font-weight: 900;
+
 }
 
 
 .auth-message h1 strong {
+
   display: block;
 
   color: #a9edc9;
+
 }
 
 
 .auth-message p {
+
   max-width: 500px;
 
   line-height: 1.8;
@@ -462,6 +767,7 @@ const registerUser = async () => {
   color: #d7f3e5;
 
   font-size: 15px;
+
 }
 
 
@@ -470,12 +776,16 @@ const registerUser = async () => {
 ================================= */
 
 .benefits {
+
   margin-top: 35px;
+
 }
 
 
 .benefits div {
+
   display: flex;
+
   align-items: center;
 
   gap: 12px;
@@ -487,11 +797,14 @@ const registerUser = async () => {
   font-weight: 600;
 
   color: #effcf6;
+
 }
 
 
 .benefits b {
+
   width: 27px;
+
   height: 27px;
 
   flex-shrink: 0;
@@ -503,10 +816,13 @@ const registerUser = async () => {
   border: 1px solid rgba(255, 255, 255, 0.12);
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   color: #baf5d8;
+
 }
 
 
@@ -515,11 +831,15 @@ const registerUser = async () => {
 ================================= */
 
 .auth-right {
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   padding: 50px;
+
 }
 
 
@@ -528,7 +848,9 @@ const registerUser = async () => {
 ================================= */
 
 .auth-box {
+
   width: 100%;
+
   max-width: 450px;
 
   background: #ffffff;
@@ -540,6 +862,7 @@ const registerUser = async () => {
   box-shadow:
     0 25px 70px rgba(6, 59, 43, 0.1),
     0 8px 25px rgba(6, 59, 43, 0.04);
+
 }
 
 
@@ -548,11 +871,13 @@ const registerUser = async () => {
 ================================= */
 
 .mobile-brand {
+
   display: none;
 
   color: #10271d;
 
   margin-bottom: 30px;
+
 }
 
 
@@ -561,11 +886,14 @@ const registerUser = async () => {
 ================================= */
 
 .form-heading {
+
   margin-bottom: 30px;
+
 }
 
 
 .form-heading h2 {
+
   color: #10271d;
 
   font-size: 28px;
@@ -575,15 +903,18 @@ const registerUser = async () => {
   font-weight: 900;
 
   letter-spacing: -0.5px;
+
 }
 
 
 .form-heading p {
+
   color: #74837b;
 
   font-size: 14px;
 
   line-height: 1.6;
+
 }
 
 
@@ -592,11 +923,14 @@ const registerUser = async () => {
 ================================= */
 
 .input-group {
+
   margin-bottom: 18px;
+
 }
 
 
 .input-group label {
+
   display: block;
 
   color: #1c3429;
@@ -606,10 +940,13 @@ const registerUser = async () => {
   font-weight: 700;
 
   margin-bottom: 8px;
+
 }
 
 
-.input-group input {
+.input-group input,
+.input-group select {
+
   width: 100%;
 
   box-sizing: border-box;
@@ -634,26 +971,61 @@ const registerUser = async () => {
     border-color 0.2s ease,
     box-shadow 0.2s ease,
     background 0.2s ease;
+
 }
 
 
 .input-group input::placeholder {
+
   color: #9aa9a2;
+
 }
 
 
-.input-group input:hover {
+.input-group input:hover,
+.input-group select:hover {
+
   border-color: #b9d7c9;
+
 }
 
 
-.input-group input:focus {
+.input-group input:focus,
+.input-group select:focus {
+
   border-color: #0ea96a;
 
   background: #ffffff;
 
   box-shadow:
     0 0 0 3px rgba(14, 169, 106, 0.11);
+
+}
+
+
+.input-group select {
+
+  cursor: pointer;
+
+}
+
+
+/* =================================
+   INPUT HINT
+================================= */
+
+.input-hint {
+
+  display: block;
+
+  margin-top: 6px;
+
+  color: #84938c;
+
+  font-size: 11px;
+
+  line-height: 1.4;
+
 }
 
 
@@ -662,6 +1034,7 @@ const registerUser = async () => {
 ================================= */
 
 .register-button {
+
   width: 100%;
 
   padding: 15px;
@@ -694,10 +1067,12 @@ const registerUser = async () => {
 
   box-shadow:
     0 10px 22px rgba(14, 169, 106, 0.18);
+
 }
 
 
 .register-button:hover {
+
   background:
     linear-gradient(
       135deg,
@@ -709,15 +1084,19 @@ const registerUser = async () => {
 
   box-shadow:
     0 14px 28px rgba(14, 169, 106, 0.24);
+
 }
 
 
 .register-button:active {
+
   transform: translateY(0);
+
 }
 
 
 .register-button:disabled {
+
   opacity: 0.6;
 
   cursor: not-allowed;
@@ -725,6 +1104,7 @@ const registerUser = async () => {
   transform: none;
 
   box-shadow: none;
+
 }
 
 
@@ -734,6 +1114,7 @@ const registerUser = async () => {
 
 .error-message,
 .success-message {
+
   padding: 12px 13px;
 
   border-radius: 10px;
@@ -743,24 +1124,29 @@ const registerUser = async () => {
   line-height: 1.5;
 
   margin-bottom: 15px;
+
 }
 
 
 .error-message {
+
   background: #fff1f2;
 
   border: 1px solid #ffd5dc;
 
   color: #be123c;
+
 }
 
 
 .success-message {
+
   background: #eafaf2;
 
   border: 1px solid #c8edd9;
 
   color: #16804a;
+
 }
 
 
@@ -769,6 +1155,7 @@ const registerUser = async () => {
 ================================= */
 
 .login-text {
+
   text-align: center;
 
   color: #77847d;
@@ -776,10 +1163,12 @@ const registerUser = async () => {
   font-size: 13px;
 
   margin-top: 25px;
+
 }
 
 
 .login-text a {
+
   color: #0a8754;
 
   font-weight: 800;
@@ -787,11 +1176,14 @@ const registerUser = async () => {
   text-decoration: none;
 
   transition: color 0.2s ease;
+
 }
 
 
 .login-text a:hover {
+
   color: #063b2b;
+
 }
 
 
@@ -800,6 +1192,7 @@ const registerUser = async () => {
 ================================= */
 
 .back-home {
+
   display: block;
 
   text-align: center;
@@ -813,11 +1206,14 @@ const registerUser = async () => {
   text-decoration: none;
 
   transition: color 0.2s ease;
+
 }
 
 
 .back-home:hover {
+
   color: #0a8754;
+
 }
 
 
@@ -828,27 +1224,37 @@ const registerUser = async () => {
 @media (max-width: 850px) {
 
   .auth-page {
+
     grid-template-columns: 1fr;
+
   }
 
   .auth-left {
+
     display: none;
+
   }
 
   .auth-right {
+
     min-height: 100vh;
 
     padding: 25px;
+
   }
 
   .mobile-brand {
+
     display: flex;
+
   }
 
   .auth-box {
+
     box-shadow: none;
 
     padding: 30px 25px;
+
   }
 
 }
@@ -861,29 +1267,42 @@ const registerUser = async () => {
 @media (max-width: 480px) {
 
   .auth-right {
+
     padding: 15px;
+
   }
 
   .auth-box {
+
     padding: 25px 20px;
 
     border-radius: 18px;
+
   }
 
   .mobile-brand {
+
     margin-bottom: 24px;
+
   }
 
   .form-heading h2 {
+
     font-size: 25px;
+
   }
 
-  .input-group input {
+  .input-group input,
+  .input-group select {
+
     padding: 13px 14px;
+
   }
 
   .register-button {
+
     padding: 14px;
+
   }
 
 }
