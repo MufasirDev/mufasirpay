@@ -1,12 +1,17 @@
 <template>
   <div class="app">
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo">
+    <img
+      src="/logo.png"
+      alt="MufasirPay"
+      class="full-logo"
+    />
+  </div>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
-      <div class="logo">
-        <div class="logo-icon">M</div>
-        <span>Mufasir<span>Pay</span></span>
-      </div>
+  <!-- your existing navbar links remain here -->
+
 
       <div class="nav-links">
         <a href="#features">Features</a>
