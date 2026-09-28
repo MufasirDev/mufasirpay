@@ -58,10 +58,11 @@
   <span>→</span>
 </router-link>
 
-            <button class="secondary-btn">
-              Explore Features
-            </button>
-          </div>
+            <a href="#features" class="secondary-btn">
+    Explore Features
+  </a>
+
+</div>
 
           <div class="trust">
             <div class="avatars">
