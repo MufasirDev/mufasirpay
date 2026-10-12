@@ -112,6 +112,63 @@
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
+      <!-- PAGE HEADER -->
+<header class="page-header">
+  <div>
+    <h1>Transactions</h1>
+    <p>Track and manage your MufasirPay activity.</p>
+  </div>
+
+  <button class="export-btn" @click="exportCSV">
+    ↓ Export CSV
+  </button>
+</header>
+
+<!-- SEARCH AND FILTERS -->
+<section class="filters-card">
+  <input
+    v-model="searchQuery"
+    type="search"
+    placeholder="Search transactions..."
+    class="filter-input"
+  />
+
+  <select v-model="statusFilter" class="filter-input">
+    <option value="all">All statuses</option>
+    <option value="successful">Successful</option>
+    <option value="pending">Pending</option>
+    <option value="failed">Failed</option>
+  </select>
+
+  <select v-model="typeFilter" class="filter-input">
+    <option value="all">All transactions</option>
+    <option value="income">Money in</option>
+    <option value="expense">Money out</option>
+  </select>
+
+  <input
+    v-model="startDate"
+    type="date"
+    class="filter-input"
+    aria-label="Start date"
+  />
+
+  <input
+    v-model="endDate"
+    type="date"
+    class="filter-input"
+    aria-label="End date"
+  />
+
+  <button class="clear-btn" @click="clearFilters">
+    Clear filters
+  </button>
+</section>
+
+<p class="results-count">
+  Showing {{ filteredTransactions.length }} of
+  {{ transactions.length }} transactions
+</p>
 
       <!-- SUMMARY -->
       <div class="summary-grid">
@@ -334,6 +391,130 @@ const userId =
 const transactions =
   ref<any[]>([])
 
+const searchQuery = ref('')
+const statusFilter = ref('all')
+const typeFilter = ref('all')
+const startDate = ref('')
+const endDate = ref('')
+
+const filteredTransactions = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase()
+
+  return transactions.value.filter((transaction: any) => {
+    const title = String(
+      transactionTitle(transaction) || ''
+    ).toLowerCase()
+
+    const description = String(
+      transaction.description || ''
+    ).toLowerCase()
+
+    const reference = String(
+      transaction.reference ||
+      transaction.id ||
+      ''
+    ).toLowerCase()
+
+    const status = String(
+      transaction.status || ''
+    ).toLowerCase()
+
+    const matchesSearch =
+      !query ||
+      title.includes(query) ||
+      description.includes(query) ||
+      reference.includes(query)
+
+    const matchesStatus =
+      statusFilter.value === 'all' ||
+      status === statusFilter.value
+
+    const isIncome =
+      transaction.receiver_id === userId.value
+
+    const matchesType =
+      typeFilter.value === 'all' ||
+      (typeFilter.value === 'income' && isIncome) ||
+      (typeFilter.value === 'expense' &&
+        transaction.sender_id === userId.value)
+
+    const transactionDate = transaction.created_at
+      ? new Date(transaction.created_at)
+      : null
+
+    const matchesStart =
+      !startDate.value ||
+      (transactionDate !== null &&
+        transactionDate >= new Date(`${startDate.value}T00:00:00`))
+
+    const matchesEnd =
+      !endDate.value ||
+      (transactionDate !== null &&
+        transactionDate <= new Date(`${endDate.value}T23:59:59.999`))
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesType &&
+      matchesStart &&
+      matchesEnd
+    )
+  })
+})
+
+function clearFilters() {
+  searchQuery.value = ''
+  statusFilter.value = 'all'
+  typeFilter.value = 'all'
+  startDate.value = ''
+  endDate.value = ''
+}
+
+function exportCSV() {
+  const headers = [
+    'Date',
+    'Description',
+    'Type',
+    'Amount (NGN)',
+    'Status',
+    'Reference'
+  ]
+
+  const rows = filteredTransactions.value.map(
+    (transaction: any) => [
+      transaction.created_at || '',
+      transactionTitle(transaction),
+      transaction.receiver_id === userId.value
+        ? 'Money In'
+        : 'Money Out',
+      Number(transaction.amount || 0).toFixed(2),
+      transaction.status || '',
+      transaction.reference || transaction.id || ''
+    ]
+  )
+
+  const escapeCSV = (value: unknown) =>
+    `"${String(value ?? '').replace(/"/g, '""')}"`
+
+  const csv = [
+    headers.map(escapeCSV).join(','),
+    ...rows.map(row => row.map(escapeCSV).join(','))
+  ].join('\r\n')
+
+  const blob = new Blob(
+    ['\uFEFF' + csv],
+    { type: 'text/csv;charset=utf-8;' }
+  )
+
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+
+  link.href = url
+  link.download = 'mufasirpay-transactions.csv'
+  link.click()
+
+  URL.revokeObjectURL(url)
+}
 
 // ----------------------------------
 // TOTAL INCOME
@@ -1530,6 +1711,94 @@ onMounted(() => {
       185px;
   }
 
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.page-header h1 {
+  margin: 0 0 7px;
+  color: #063b2b;
+  font-size: 27px;
+  font-weight: 800;
+}
+
+.page-header p,
+.results-count {
+  color: #82918a;
+  font-size: 13px;
+}
+
+.export-btn,
+.clear-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.export-btn {
+  background: #087b51;
+  color: white;
+}
+
+.clear-btn {
+  background: #e8f8f0;
+  color: #087b51;
+}
+
+.filters-card {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  background: white;
+  border: 1px solid #e5efe9;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 12px;
+}
+
+.filter-input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #dce8e1;
+  border-radius: 9px;
+  background: #fff;
+  color: #13231d;
+  font: inherit;
+  font-size: 12px;
+}
+
+.filter-input:focus {
+  outline: 2px solid #87dcb1;
+  border-color: #087b51;
+}
+
+.results-count {
+  margin: 12px 0 18px;
+}
+
+@media (max-width: 600px) {
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-top: 5px;
+  }
+
+  .filters-card {
+    grid-template-columns: 1fr;
+  }
+
+  .export-btn {
+    width: 100%;
+  }
 }
 
 </style>

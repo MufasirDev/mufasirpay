@@ -92,7 +92,7 @@
         </button>
       </div>
     </aside>
-
+    
 
     <div
       v-if="sidebarOpen"
@@ -128,15 +128,14 @@
 
       </div>
 
-
+          
       <div class="transfer-card">
 
         <h2>Send Money</h2>
-
+            
         <p class="description">
           Enter the recipient's 10-digit MufasirPay account number.
         </p>
-
 
         <form @submit.prevent="transferMoney">
 

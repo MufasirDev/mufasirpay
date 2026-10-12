@@ -251,7 +251,6 @@
             Take control of
             <strong>your money.</strong>
           </h2>
-
           <p>
             Create your MufasirPay account and experience a simpler way
             to manage your finances.
@@ -262,11 +261,10 @@
   Create Your Account →
 </router-link>
 
+
       </section>
 
     </main>
-
-    
     <footer>
       <div class="footer-logo">
         <div class="logo-icon">M</div>

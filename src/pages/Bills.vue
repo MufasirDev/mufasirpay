@@ -345,7 +345,7 @@
                 <option value="postpaid">
                   Postpaid
                 </option>
-
+               
               </select>
 
             </div>
@@ -379,6 +379,14 @@
 
                 <option value="gotv">
                   GOtv
+                </option>
+
+                <option value="startimes">
+                  Startimes Subscription 
+                </option>
+
+                <option value="showmax">
+                  ShowMax
                 </option>
 
               </select>

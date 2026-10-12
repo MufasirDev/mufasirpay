@@ -12,6 +12,8 @@ import Transactions from '../pages/Transactions.vue'
 import Airtime from '../pages/Airtime.vue'
 import Profile from '../pages/Profile.vue'
 import Bills from '../pages/Bills.vue'
+import Notifications from '../pages/Notifications.vue'
+import Analytics from '../pages/Analytics.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -100,7 +102,22 @@ const router = createRouter({
       meta: {
         requiresAuth: true
       }
-    }
+    },
+
+    {
+  path: '/notifications',
+  name: 'Notifications',
+  component: Notifications,
+  meta: {
+    requiresAuth: true
+  }
+    },
+    {
+  path: '/analytics',
+  name: 'Analytics',
+  component: Analytics,
+  meta: { requiresAuth: true },
+},
   ]
 })
 
