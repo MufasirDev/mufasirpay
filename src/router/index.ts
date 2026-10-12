@@ -14,6 +14,8 @@ import Profile from '../pages/Profile.vue'
 import Bills from '../pages/Bills.vue'
 import Notifications from '../pages/Notifications.vue'
 import Analytics from '../pages/Analytics.vue'
+import Security from '../pages/Security.vue'
+import HelpSupport from '../pages/HelpSupport.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -117,6 +119,22 @@ const router = createRouter({
   name: 'Analytics',
   component: Analytics,
   meta: { requiresAuth: true },
+},
+{
+  path: '/security',
+  name: 'Security',
+  component: Security,
+  meta: {
+    requiresAuth: true
+  },
+},
+{
+  path: '/support',
+  name: 'HelpSupport',
+  component: HelpSupport,
+  meta: {
+    requiresAuth: true
+  }
 },
   ]
 })

@@ -128,22 +128,6 @@
 
           class="nav-item"
 
-          @click="goTo('/analytics')"
-
-        >
-
-          <span class="nav-icon">▥</span>
-
-          <span>Analytics</span>
-
-        </button>
-
-        <button
-
-          type="button"
-
-          class="nav-item"
-
           @click="goTo('/profile')"
 
         >
@@ -400,202 +384,6 @@
 
         </section>
 
-        <!-- FINANCIAL ANALYTICS -->
-
-        <section class="section analytics-section">
-
-          <div class="section-header analytics-header">
-
-            <div>
-
-              <p class="section-eyebrow">YOUR MONEY</p>
-
-              <h2>Financial Analytics</h2>
-
-              <p class="analytics-subtitle">Track successful money-in and money-out transactions.</p>
-
-            </div>
-
-            <label class="analytics-range">
-
-              <span class="sr-only">Analytics date range</span>
-
-              <select v-model="analyticsRange" aria-label="Analytics date range">
-
-                <option value="7">Last 7 days</option>
-
-                <option value="30">Last 30 days</option>
-
-                <option value="90">Last 90 days</option>
-
-              </select>
-
-            </label>
-
-          </div>
-
-          <div class="analytics-summary-grid">
-
-            <article class="analytics-summary-card">
-
-              <div class="analytics-summary-top">
-
-                <span class="analytics-dot income-dot"></span>
-
-                <span>Money received</span>
-
-              </div>
-
-              <strong>₦{{ formatMoney(analyticsTotals.income) }}</strong>
-
-              <small>Successful incoming transactions</small>
-
-            </article>
-
-            <article class="analytics-summary-card">
-
-              <div class="analytics-summary-top">
-
-                <span class="analytics-dot expense-dot"></span>
-
-                <span>Money spent</span>
-
-              </div>
-
-              <strong>₦{{ formatMoney(analyticsTotals.expenses) }}</strong>
-
-              <small>Successful outgoing transactions</small>
-
-            </article>
-
-            <article class="analytics-summary-card">
-
-              <div class="analytics-summary-top">
-
-                <span class="analytics-dot net-dot"></span>
-
-                <span>Net cash flow</span>
-
-              </div>
-
-              <strong :class="analyticsTotals.net >= 0 ? 'positive-value' : 'negative-value'">
-
-                {{ analyticsTotals.net < 0 ? '−' : '' }}₦{{ formatMoney(Math.abs(analyticsTotals.net)) }}
-
-              </strong>
-
-              <small>Money received minus money spent</small>
-
-            </article>
-
-          </div>
-
-          <div class="analytics-chart-card">
-
-            <div class="analytics-chart-heading">
-
-              <div>
-
-                <h3>Income vs spending</h3>
-
-                <p>Daily activity for the selected period</p>
-
-              </div>
-
-              <div class="analytics-legend">
-
-                <span><i class="income-legend"></i>Income</span>
-
-                <span><i class="expense-legend"></i>Spending</span>
-
-              </div>
-
-            </div>
-
-            <div v-if="analyticsTotals.transactionCount === 0" class="analytics-empty">
-
-              <span class="analytics-empty-icon">▥</span>
-
-              <strong>No completed transactions in this period</strong>
-
-              <p>Once you make or receive successful transactions, your activity will appear here.</p>
-
-            </div>
-
-            <div v-else class="analytics-chart" role="img" :aria-label="`Income and spending over the last ${analyticsRange} days`">
-
-              <div v-for="day in analyticsChartData" :key="day.key" class="chart-column">
-
-                <div class="chart-bars">
-
-                  <div class="chart-bar income-bar" :style="{ height: `${chartBarHeight(day.income)}%` }" :title="`Income: ₦${formatMoney(day.income)}`"></div>
-
-                  <div class="chart-bar expense-bar" :style="{ height: `${chartBarHeight(day.expenses)}%` }" :title="`Spending: ₦${formatMoney(day.expenses)}`"></div>
-
-                </div>
-
-                <span class="chart-day-label">{{ day.label }}</span>
-
-              </div>
-
-            </div>
-
-            <p v-if="analyticsTotals.transactionCount > 0" class="analytics-footnote">
-
-              {{ analyticsTotals.transactionCount }} successful transaction{{ analyticsTotals.transactionCount === 1 ? '' : 's' }} included. Pending and failed transactions are excluded.
-
-            </p>
-
-          </div>
-
-          <div class="analytics-chart-card category-card">
-
-            <div class="analytics-chart-heading">
-
-              <div>
-
-                <h3>Spending breakdown</h3>
-
-                <p>Grouped from your successful outgoing transactions</p>
-
-              </div>
-
-            </div>
-
-            <div v-if="analyticsCategories.length === 0" class="category-empty">
-
-              No successful outgoing transactions in this period yet.
-
-            </div>
-
-            <div v-else class="category-list">
-
-              <div v-for="category in analyticsCategories" :key="category.name" class="category-row">
-
-                <div class="category-row-top">
-
-                  <span>{{ category.name }}</span>
-
-                  <strong>₦{{ formatMoney(category.amount) }}</strong>
-
-                </div>
-
-                <div class="category-track">
-
-                  <div class="category-fill" :style="{ width: `${category.percentage}%` }"></div>
-
-                </div>
-
-                <small>{{ category.percentage }}% of outgoing spend</small>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </section>
-
         <!-- QUICK ACTIONS -->
 
         <section class="section">
@@ -781,6 +569,74 @@
               </p>
 
             </button>
+
+            <!-- ANALYTICS -->
+
+            <button
+
+              type="button"
+
+              class="action-card"
+
+              @click="goTo('/analytics')"
+
+            >
+
+              <div class="action-icon">▥</div>
+
+              <div class="action-arrow">→</div>
+
+              <h3>Financial Analytics</h3>
+
+              <p>Review your income, expenses, and spending trends.</p>
+
+            </button>
+
+            <!-- NOTIFICATIONS -->
+
+            <button
+
+              type="button"
+
+              class="action-card"
+
+              @click="goTo('/notifications')"
+
+            >
+
+              <div class="action-icon">♧</div>
+
+              <div class="action-arrow">→</div>
+
+              <h3>Notifications</h3>
+
+              <p>View important alerts and updates about your account.</p>
+
+            </button>
+
+            <!-- SECURITY CENTER -->
+            <button
+              type="button"
+              class="action-card"
+              @click="goTo('/security')"
+            >
+              <div class="action-icon">🛡</div>
+              <div class="action-arrow">→</div>
+              <h3>Security Center</h3>
+              <p>Manage your password and account security.</p>
+            </button>
+            
+<!-- HELP & SUPPORT -->
+ <button
+  type="button"
+  class="action-card"
+  @click="goTo('/support')"
+>
+  <div class="action-icon">🎧</div>
+  <div class="action-arrow">→</div>
+  <h3>Help & Support</h3>
+  <p>Get help, explore FAQs, or report a transaction issue.</p>
+</button>
 
           </div>
 
@@ -1028,7 +884,7 @@ const transactions =
 
    NAVIGATION
 
-\\========================= */
+\\\\\\\\========================= */
 
 const goTo = (
 
@@ -1048,7 +904,7 @@ const goTo = (
 
    WALLET
 
-\\========================= */
+\\\\\\\\========================= */
 
 const openWallet = () => {
 
@@ -1064,7 +920,7 @@ const openWallet = () => {
 
    FIRST NAME
 
-\\========================= */
+\\\\\\\\========================= */
 
 const firstName =
 
@@ -1088,7 +944,7 @@ const firstName =
 
    INITIALS
 
-\\========================= */
+\\\\\\\\========================= */
 
 const initials =
 
@@ -1140,7 +996,7 @@ const initials =
 
    BALANCE
 
-\\========================= */
+\\\\\\\\========================= */
 
 const formattedBalance =
 
@@ -1166,215 +1022,12 @@ const formattedBalance =
 
   })
 
-/* =========================
-
-   FINANCIAL ANALYTICS
-
-\========================= */
-
-const analyticsRange = ref('7')
-
-const currentUserId = ref('')
-
-const successfulTransactions = computed(() => {
-
-  const successfulStatuses = ['successful', 'success', 'completed']
-
-  return transactions.value.filter((transaction: any) =>
-
-    successfulStatuses.includes(String(transaction.status || '').toLowerCase())
-
-  )
-
-})
-
-const analyticsTransactions = computed(() => {
-
-  const days = Number(analyticsRange.value)
-
-  const start = new Date()
-
-  start.setHours(0, 0, 0, 0)
-
-  start.setDate(start.getDate() - (days - 1))
-
-  return successfulTransactions.value.filter((transaction: any) => {
-
-    const date = new Date(transaction.created_at)
-
-    return !Number.isNaN(date.getTime()) && date >= start && date <= new Date()
-
-  })
-
-})
-
-const analyticsTotals = computed(() => {
-
-  let income = 0
-
-  let expenses = 0
-
-  analyticsTransactions.value.forEach((transaction: any) => {
-
-    const amount = Number(transaction.amount) || 0
-
-    if (transaction.receiver_id === currentUserId.value) income += amount
-
-    if (transaction.sender_id === currentUserId.value) expenses += amount
-
-  })
-
-  return {
-
-    income,
-
-    expenses,
-
-    net: income - expenses,
-
-    transactionCount: analyticsTransactions.value.length,
-
-  }
-
-})
-
-const analyticsChartData = computed(() => {
-
-  const days = Number(analyticsRange.value)
-
-  const today = new Date()
-
-  today.setHours(0, 0, 0, 0)
-
-  const result: Array<{ key: string; label: string; income: number; expenses: number }> = []
-
-  for (let offset = days - 1; offset >= 0; offset--) {
-
-    const date = new Date(today)
-
-    date.setDate(today.getDate() - offset)
-
-    const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
-
-    let income = 0
-
-    let expenses = 0
-
-    analyticsTransactions.value.forEach((transaction: any) => {
-
-      const transactionDate = new Date(transaction.created_at)
-
-      if (
-
-        transactionDate.getFullYear() === date.getFullYear() &&
-
-        transactionDate.getMonth() === date.getMonth() &&
-
-        transactionDate.getDate() === date.getDate()
-
-      ) {
-
-        const amount = Number(transaction.amount) || 0
-
-        if (transaction.receiver_id === currentUserId.value) income += amount
-
-        if (transaction.sender_id === currentUserId.value) expenses += amount
-
-      }
-
-    })
-
-    result.push({
-
-      key,
-
-      label: days === 7
-
-        ? date.toLocaleDateString('en-NG', { weekday: 'short' })
-
-        : date.toLocaleDateString('en-NG', { day: 'numeric', month: 'short' }),
-
-      income,
-
-      expenses,
-
-    })
-
-  }
-
-  return result
-
-})
-
-const analyticsCategories = computed(() => {
-
-  const categories = new Map<string, number>()
-
-  analyticsTransactions.value.forEach((transaction: any) => {
-
-    if (transaction.sender_id !== currentUserId.value) return
-
-    const text = `${transaction.type || ''} ${transaction.description || ''}`.toLowerCase()
-
-    let name = 'Other transfers'
-
-    if (text.includes('airtime')) name = 'Airtime'
-
-    else if (text.includes('data')) name = 'Mobile data'
-
-    else if (text.includes('electric') || text.includes('bill') || text.includes('cable')) name = 'Bills'
-
-    else if (text.includes('transfer')) name = 'Transfers'
-
-    categories.set(name, (categories.get(name) || 0) + (Number(transaction.amount) || 0))
-
-  })
-
-  const total = Array.from(categories.values()).reduce((sum, amount) => sum + amount, 0)
-
-  return Array.from(categories.entries())
-
-    .map(([name, amount]) => ({
-
-      name,
-
-      amount,
-
-      percentage: total > 0 ? Math.round((amount / total) * 100) : 0,
-
-    }))
-
-    .sort((a, b) => b.amount - a.amount)
-
-})
-
-const formatMoney = (amount: number) => Number(amount || 0).toLocaleString('en-NG', {
-
-  minimumFractionDigits: 2,
-
-  maximumFractionDigits: 2,
-
-})
-
-const chartBarHeight = (amount: number) => {
-
-  const maximum = Math.max(
-
-    ...analyticsChartData.value.flatMap((day) => [day.income, day.expenses]),
-
-    1,
-
-  )
-
-  return amount > 0 ? Math.max((amount / maximum) * 100, 4) : 0
-
-}
 
 /* =========================
 
    LOAD DASHBOARD
 
-\\========================= */
+\\\\\\\\========================= */
 
 const loadDashboard =
 
@@ -1410,7 +1063,7 @@ const loadDashboard =
 
       }
 
-      currentUserId.value = user.id
+      
 
       /* PROFILE */
 
@@ -1678,7 +1331,7 @@ const loadDashboard =
 
    LOGOUT
 
-\\========================= */
+\\\\\\\\========================= */
 
 const logout =
 
@@ -1698,7 +1351,7 @@ const logout =
 
    DATE
 
-\\========================= */
+\\\\\\\\========================= */
 
 const formatDate =
 
@@ -1732,7 +1385,7 @@ const formatDate =
 
    START
 
-\\========================= */
+\\\\\\\\========================= */
 
 onMounted(() => {
 
@@ -1778,7 +1431,7 @@ onMounted(() => {
 
    SIDEBAR
 
-\\========================= */
+\\\\\\\\========================= */
 
 .sidebar {
 
@@ -2026,7 +1679,7 @@ onMounted(() => {
 
   transition:
 
-    background 0.2s ease,
+    background* 0.2s ease,
 
     color 0.2s ease,
 
@@ -2138,7 +1791,7 @@ onMounted(() => {
 
   transition:
 
-    background 0.2s ease,
+    background* 0.2s ease,
 
     color 0.2s ease;
 
@@ -2168,7 +1821,7 @@ onMounted(() => {
 
    MAIN
 
-\\========================= */
+\\\\\\\\========================= */
 
 .main-content {
 
@@ -2192,7 +1845,7 @@ onMounted(() => {
 
    TOPBAR
 
-\\========================= */
+\\\\\\\\========================= */
 
 .topbar {
 
@@ -2336,7 +1989,7 @@ onMounted(() => {
 
    BALANCE CARD
 
-\\========================= */
+\\\\\\\\========================= */
 
 .balance-card {
 
@@ -2764,7 +2417,7 @@ onMounted(() => {
 
    STATS
 
-\\========================= */
+\\\\\\\\========================= */
 
 .stats-grid {
 
@@ -2928,7 +2581,7 @@ onMounted(() => {
 
    SECTIONS
 
-\\========================= */
+\\\\\\\\========================= */
 
 .section {
 
@@ -2978,7 +2631,7 @@ onMounted(() => {
 
    QUICK ACTIONS
 
-\\========================= */
+\\\\\\\\========================= */
 
 .actions-grid {
 
@@ -3160,7 +2813,7 @@ onMounted(() => {
 
    TRANSACTIONS
 
-\\========================= */
+\\\\\\\\========================= */
 
 .transactions-header {
 
@@ -3478,7 +3131,7 @@ onMounted(() => {
 
    LOADING
 
-\\========================= */
+\\\\\\\\========================= */
 
 .loading {
 
@@ -3550,7 +3203,7 @@ onMounted(() => {
 
    FINANCIAL ANALYTICS
 
-\========================= */
+\\\\========================= */
 
 .analytics-section {
 
@@ -4044,7 +3697,7 @@ onMounted(() => {
 
    RESPONSIVE
 
-\\========================= */
+\\\\\\\\========================= */
 
 @media (max-width: 1180px) {
 
