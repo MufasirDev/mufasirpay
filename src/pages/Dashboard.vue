@@ -30,11 +30,9 @@
 
           type="button"
 
-          class="nav-item active"
+ class="nav-item active"
 
-          @click="goTo('/dashboard')"
-
-        >
+ @click="goTo('/dashboard')" >
 
           <span class="nav-icon">⌂</span>
 
@@ -149,7 +147,6 @@
         @click="logout"
 
       >
-
         <span class="nav-icon">↪</span>
 
         <span>Logout</span>
@@ -157,7 +154,6 @@
       </button>
 
     </aside>
-
     <!-- MAIN CONTENT -->
 
     <main class="main-content">
@@ -235,81 +231,76 @@
       </div>
 
       <template v-else>
-
         <!-- BALANCE -->
-
         <section class="balance-card">
-
           <div class="balance-content">
+            <div class="balance-label-row">
+              <p class="balance-label">Available Balance</p>
+              <button
+                type="button"
+                class="balance-toggle-btn"
+                @click="toggleBalance"
+                :aria-label="showBalance ? 'Hide balance' : 'Show balance'"
+                :title="showBalance ? 'Hide balance' : 'Show balance'"
+              >
+                <svg
+                  v-if="showBalance"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3 3l18 18" />
+                  <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                  <path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a15.7 15.7 0 0 1-4 4.8" />
+                  <path d="M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10.5 10.5 0 0 0 3.1-.5" />
+                </svg>
+              </button>
+            </div>
 
-            <p class="balance-label">
-
-              Available Balance
-
-            </p>
-
-            <h2>
-
-              ₦{{ formattedBalance }}
-
-            </h2>
+            <h2>{{ showBalance ? `₦${formattedBalance}` : '₦ ••••••' }}</h2>
 
             <p class="account-number">
-
               Account Number:
-
-              <strong>
-
-                {{ accountNumber }}
-
-              </strong>
-
+              <strong>{{ accountNumber }}</strong>
             </p>
 
             <div class="balance-actions">
-
+              <button type="button" @click="openWallet">Fund Wallet</button>
               <button
-
                 type="button"
-
-                @click="openWallet"
-
-              >
-
-                Fund Wallet
-
-              </button>
-
-              <button
-
-                type="button"
-
                 class="outline-btn"
-
                 @click="goTo('/transactions')"
-
               >
-
                 View Transactions
-
               </button>
-
             </div>
-
           </div>
 
           <div class="balance-visual">
-
-            <div class="wallet-symbol">
-
-              <span>₦</span>
-
-            </div>
-
+            <div class="wallet-symbol"><span>₦</span></div>
             <div class="balance-glow"></div>
-
           </div>
-
         </section>
 
         <!-- STATS -->
@@ -615,27 +606,47 @@
             </button>
 
             <!-- SECURITY CENTER -->
+
             <button
+
               type="button"
+
               class="action-card"
+
               @click="goTo('/security')"
+
             >
+
               <div class="action-icon">🛡</div>
+
               <div class="action-arrow">→</div>
+
               <h3>Security Center</h3>
+
               <p>Manage your password and account security.</p>
+
             </button>
-            
+
 <!-- HELP & SUPPORT -->
+
  <button
+
   type="button"
+
   class="action-card"
+
   @click="goTo('/support')"
+
 >
+
   <div class="action-icon">🎧</div>
+
   <div class="action-arrow">→</div>
+
   <h3>Help & Support</h3>
+
   <p>Get help, explore FAQs, or report a transaction issue.</p>
+
 </button>
 
           </div>
@@ -800,7 +811,7 @@
 
                 <span
 
-                  :class="[
+   :class="[
 
                     'transaction-status',
 
@@ -808,7 +819,7 @@
 
                   ]"
 
-                >
+>
 
                   {{ transaction.status }}
 
@@ -864,6 +875,12 @@ const balance =
 
   ref(0)
 
+
+const showBalance = ref(true)
+
+const toggleBalance = () => {
+  showBalance.value = !showBalance.value
+}
 const totalIncome =
 
   ref('0.00')
@@ -884,7 +901,7 @@ const transactions =
 
    NAVIGATION
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 const goTo = (
 
@@ -904,7 +921,7 @@ const goTo = (
 
    WALLET
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 const openWallet = () => {
 
@@ -920,7 +937,7 @@ const openWallet = () => {
 
    FIRST NAME
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 const firstName =
 
@@ -944,7 +961,7 @@ const firstName =
 
    INITIALS
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 const initials =
 
@@ -996,7 +1013,7 @@ const initials =
 
    BALANCE
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 const formattedBalance =
 
@@ -1022,12 +1039,11 @@ const formattedBalance =
 
   })
 
-
 /* =========================
 
    LOAD DASHBOARD
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 const loadDashboard =
 
@@ -1062,8 +1078,6 @@ const loadDashboard =
         return
 
       }
-
-      
 
       /* PROFILE */
 
@@ -1331,7 +1345,7 @@ const loadDashboard =
 
    LOGOUT
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 const logout =
 
@@ -1351,7 +1365,7 @@ const logout =
 
    DATE
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 const formatDate =
 
@@ -1385,7 +1399,7 @@ const formatDate =
 
    START
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 onMounted(() => {
 
@@ -1431,7 +1445,7 @@ onMounted(() => {
 
    SIDEBAR
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 .sidebar {
 
@@ -1821,7 +1835,7 @@ onMounted(() => {
 
    MAIN
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 .main-content {
 
@@ -1845,7 +1859,7 @@ onMounted(() => {
 
    TOPBAR
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 .topbar {
 
@@ -1989,7 +2003,7 @@ onMounted(() => {
 
    BALANCE CARD
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 .balance-card {
 
@@ -2121,6 +2135,42 @@ onMounted(() => {
 
   font-weight: 600;
 
+}
+
+.balance-label-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.balance-label-row .balance-label {
+  margin: 0;
+}
+
+.balance-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.balance-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.balance-toggle-btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
 }
 
 .balance-card h2 {
@@ -2417,7 +2467,7 @@ onMounted(() => {
 
    STATS
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 .stats-grid {
 
@@ -2581,7 +2631,7 @@ onMounted(() => {
 
    SECTIONS
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 .section {
 
@@ -2631,7 +2681,7 @@ onMounted(() => {
 
    QUICK ACTIONS
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 .actions-grid {
 
@@ -2813,7 +2863,7 @@ onMounted(() => {
 
    TRANSACTIONS
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 .transactions-header {
 
@@ -3131,7 +3181,7 @@ onMounted(() => {
 
    LOADING
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 .loading {
 
@@ -3203,7 +3253,7 @@ onMounted(() => {
 
    FINANCIAL ANALYTICS
 
-\\\\========================= */
+\\\\\\\\========================= */
 
 .analytics-section {
 
@@ -3697,7 +3747,7 @@ onMounted(() => {
 
    RESPONSIVE
 
-\\\\\\\\========================= */
+\\\\\\\\\\\\\\\\========================= */
 
 @media (max-width: 1180px) {
 
