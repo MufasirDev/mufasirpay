@@ -103,7 +103,11 @@
             />
 
           </div>
-
+      <div class="forgot-password-row">
+  <router-link to="/forgot-password">
+    Forgot Password?
+  </router-link>
+</div>
 
           <!-- ERROR -->
           <div
@@ -1102,6 +1106,25 @@ const loginUser = async () => {
 
   }
 
+}
+
+.forgot-password-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -10px;
+  margin-bottom: 20px;
+}
+
+.forgot-password-row a {
+  color: #0a8754;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.forgot-password-row a:hover {
+  color: #063b2b;
+  text-decoration: underline;
 }
 
 </style>

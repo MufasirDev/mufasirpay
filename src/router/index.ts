@@ -16,6 +16,8 @@ import Notifications from '../pages/Notifications.vue'
 import Analytics from '../pages/Analytics.vue'
 import Security from '../pages/Security.vue'
 import HelpSupport from '../pages/HelpSupport.vue'
+import ForgotPassword from '../pages/ForgotPassword.vue'
+import ResetPassword from '../pages/ResetPassword.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -135,6 +137,16 @@ const router = createRouter({
   meta: {
     requiresAuth: true
   }
+},
+{
+  path: '/forgot-password',
+  name: 'ForgotPassword',
+  component: ForgotPassword
+},
+{
+  path: '/reset-password',
+  name: 'ResetPassword',
+  component: ResetPassword
 },
   ]
 })
