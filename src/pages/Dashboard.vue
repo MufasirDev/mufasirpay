@@ -147,6 +147,7 @@
         @click="logout"
 
       >
+
         <span class="nav-icon">↪</span>
 
         <span>Logout</span>
@@ -154,6 +155,7 @@
       </button>
 
     </aside>
+
     <!-- MAIN CONTENT -->
 
     <main class="main-content">
@@ -231,76 +233,139 @@
       </div>
 
       <template v-else>
+
         <!-- BALANCE -->
+
         <section class="balance-card">
+
           <div class="balance-content">
+
             <div class="balance-label-row">
+
               <p class="balance-label">Available Balance</p>
+
               <button
+
                 type="button"
+
                 class="balance-toggle-btn"
+
                 @click="toggleBalance"
+
                 :aria-label="showBalance ? 'Hide balance' : 'Show balance'"
+
                 :title="showBalance ? 'Hide balance' : 'Show balance'"
+
               >
+
                 <svg
+
                   v-if="showBalance"
+
                   xmlns="http://www.w3.org/2000/svg"
+
                   width="20"
+
                   height="20"
+
                   viewBox="0 0 24 24"
+
                   fill="none"
+
                   stroke="currentColor"
+
                   stroke-width="2"
+
                   stroke-linecap="round"
+
                   stroke-linejoin="round"
+
                 >
+
                   <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" />
+
                   <circle cx="12" cy="12" r="3" />
+
                 </svg>
+
                 <svg
+
                   v-else
+
                   xmlns="http://www.w3.org/2000/svg"
+
                   width="20"
+
                   height="20"
+
                   viewBox="0 0 24 24"
+
                   fill="none"
+
                   stroke="currentColor"
+
                   stroke-width="2"
+
                   stroke-linecap="round"
+
                   stroke-linejoin="round"
+
                 >
+
                   <path d="M3 3l18 18" />
+
                   <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+
                   <path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a15.7 15.7 0 0 1-4 4.8" />
+
                   <path d="M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10.5 10.5 0 0 0 3.1-.5" />
+
                 </svg>
+
               </button>
+
             </div>
 
             <h2>{{ showBalance ? `₦${formattedBalance}` : '₦ ••••••' }}</h2>
 
             <p class="account-number">
+
               Account Number:
+
               <strong>{{ accountNumber }}</strong>
+
             </p>
 
             <div class="balance-actions">
+
               <button type="button" @click="openWallet">Fund Wallet</button>
+
               <button
+
                 type="button"
+
                 class="outline-btn"
+
                 @click="goTo('/transactions')"
+
               >
+
                 View Transactions
+
               </button>
+
             </div>
+
           </div>
 
           <div class="balance-visual">
+
             <div class="wallet-symbol"><span>₦</span></div>
+
             <div class="balance-glow"></div>
+
           </div>
+
         </section>
 
         <!-- STATS -->
@@ -835,6 +900,21 @@
 
       </template>
 
+      <!-- MOBILE BOTTOM NAVIGATION -->
+      <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+        <button type="button" class="mobile-nav-item" :class="{ active: $route.path === '/dashboard' }" @click="goTo('/dashboard')" aria-label="Home">
+          <span aria-hidden="true">⌂</span><small>Home</small>
+        </button>
+        <button type="button" class="mobile-nav-item" :class="{ active: $route.path === '/transactions' }" @click="goTo('/transactions')" aria-label="History">
+          <span aria-hidden="true">☷</span><small>History</small>
+        </button>
+        <button type="button" class="mobile-nav-item" :class="{ active: $route.path === '/wallet' }" @click="goTo('/wallet')" aria-label="Wallet">
+          <span aria-hidden="true">▣</span><small>Wallet</small>
+        </button>
+        <button type="button" class="mobile-nav-item" :class="{ active: $route.path === '/profile' }" @click="goTo('/profile')" aria-label="Profile">
+          <span aria-hidden="true">◉</span><small>Profile</small>
+        </button>
+      </nav>
     </main>
 
   </div>
@@ -858,6 +938,9 @@ import {
   supabase
 
 } from '../lib/supabase'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const loading =
 
@@ -875,12 +958,14 @@ const balance =
 
   ref(0)
 
-
 const showBalance = ref(true)
 
 const toggleBalance = () => {
+
   showBalance.value = !showBalance.value
+
 }
+
 const totalIncome =
 
   ref('0.00')
@@ -903,18 +988,8 @@ const transactions =
 
 \\\\\\\\\\\\\\\\========================= */
 
-const goTo = (
-
-  path: string
-
-) => {
-
-  window.location.assign(
-
-    path
-
-  )
-
+const goTo = (path: string) => {
+  void router.push(path)
 }
 
 /* =========================
@@ -924,13 +999,7 @@ const goTo = (
 \\\\\\\\\\\\\\\\========================= */
 
 const openWallet = () => {
-
-  window.location.assign(
-
-    '/wallet'
-
-  )
-
+  void router.push('/wallet')
 }
 
 /* =========================
@@ -1068,15 +1137,8 @@ const loadDashboard =
         await supabase.auth.getUser()
 
       if (!user) {
-
-        window.location.assign(
-
-          '/login'
-
-        )
-
+        await router.replace('/login')
         return
-
       }
 
       /* PROFILE */
@@ -1347,19 +1409,14 @@ const loadDashboard =
 
 \\\\\\\\\\\\\\\\========================= */
 
-const logout =
-
-  async () => {
-
-    await supabase.auth.signOut()
-
-    window.location.assign(
-
-      '/'
-
-    )
-
+const logout = async () => {
+  const { error } = await supabase.auth.signOut()
+  if (error) {
+    console.error('Logout error:', error)
+    return
   }
+  await router.replace('/')
+}
 
 /* =========================
 
@@ -1693,7 +1750,7 @@ onMounted(() => {
 
   transition:
 
-    background* 0.2s ease,
+    background 0.2s ease,
 
     color 0.2s ease,
 
@@ -1805,7 +1862,7 @@ onMounted(() => {
 
   transition:
 
-    background* 0.2s ease,
+    background 0.2s ease,
 
     color 0.2s ease;
 
@@ -2138,39 +2195,65 @@ onMounted(() => {
 }
 
 .balance-label-row {
+
   display: flex;
+
   align-items: center;
+
   gap: 10px;
+
   margin-bottom: 12px;
+
 }
 
 .balance-label-row .balance-label {
+
   margin: 0;
+
 }
 
 .balance-toggle-btn {
+
   display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
+
   width: 30px;
+
   height: 30px;
+
   padding: 0;
+
   flex-shrink: 0;
+
   border: none;
+
   border-radius: 8px;
+
   background: rgba(255, 255, 255, 0.12);
+
   color: #ffffff;
+
   cursor: pointer;
-  transition: background 0.2s ease;
+
+  transition: background* 0.2s ease;
+
 }
 
 .balance-toggle-btn:hover {
+
   background: rgba(255, 255, 255, 0.24);
+
 }
 
 .balance-toggle-btn:focus-visible {
+
   outline: 2px solid #ffffff;
+
   outline-offset: 3px;
+
 }
 
 .balance-card h2 {
@@ -4031,6 +4114,121 @@ onMounted(() => {
 
   }
 
+}
+
+
+
+/* Mobile-first bottom navigation */
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  .mobile-bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 200;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.98);
+    border-top: 1px solid #e5eee8;
+    box-shadow: 0 -5px 24px rgba(6, 59, 43, 0.08);
+    backdrop-filter: blur(14px);
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    min-width: 0;
+    min-height: 48px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: #819087;
+    font-family: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-nav-item span {
+    font-size: 22px;
+    line-height: 1.1;
+  }
+
+  .mobile-nav-item small {
+    font-size: 10px;
+    font-weight: 650;
+  }
+
+  .mobile-nav-item.active {
+    color: #087b51;
+    background: #e8f8f0;
+  }
+
+  .main-content {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom));
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .action-card {
+    min-width: 0;
+    min-height: 145px;
+    padding: 14px;
+  }
+
+  .action-card h3 {
+    font-size: 13px;
+  }
+
+  .action-card p {
+    font-size: 11px;
+  }
+
+  .balance-card {
+    padding: 22px 18px;
+  }
+
+  .balance-card h2 {
+    font-size: clamp(25px, 7vw, 31px);
+    overflow-wrap: anywhere;
+  }
+
+  .balance-visual {
+    display: none;
+  }
+
+  .balance-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .balance-actions button {
+    flex: 1 1 130px;
+  }
+
+  .transaction {
+    padding: 14px 12px;
+    gap: 8px;
+  }
+
+  .transaction-right {
+    margin-left: 5px;
+  }
 }
 
 </style>
