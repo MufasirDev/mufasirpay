@@ -1,36 +1,53 @@
 <template>
+
   <div class="login-page">
+
     <div class="login-container">
 
       <!-- LEFT SIDE -->
+
       <div class="login-brand">
-        <div class="brand-logo">M</div>
+
+          <img src="/logo.png" alt="MufasirPay Logo" />
 
         <h1>Welcome back</h1>
 
         <p>
+
           Login to your MufasirPay account and manage your
+
           money with ease.
+
         </p>
 
         <div class="brand-feature">
+
           <span>✓</span>
+
           Secure wallet
+
         </div>
 
         <div class="brand-feature">
+
           <span>✓</span>
+
           Fast transfers
+
         </div>
 
         <div class="brand-feature">
+
           <span>✓</span>
+
           Easy bill payments
+
         </div>
+
       </div>
 
-
       <!-- LOGIN FORM -->
+
       <div class="login-card">
 
         <div class="mobile-logo">M</div>
@@ -38,191 +55,265 @@
         <h2>Login to MufasirPay</h2>
 
         <p class="subtitle">
-          Enter your details to continue
-        </p>
 
+          Enter your details to continue
+
+        </p>
 
         <form @submit.prevent="loginUser">
 
           <!-- EMAIL -->
+
           <div class="form-group">
 
             <label>Email Address</label>
 
             <input
+
               v-model="email"
+
               type="email"
+
               placeholder="Enter your Gmail address"
+
               required
+
             />
 
           </div>
 
-
           <!-- ACCOUNT SELECTOR -->
+
           <div class="form-group">
 
             <label>MufasirPay Account</label>
 
             <select
+
               v-model="accountNumber"
+
               required
+
             >
 
               <option value="1">
+
                 Account 1
+
               </option>
 
               <option value="2">
+
                 Account 2
+
               </option>
 
               <option value="3">
+
                 Account 3
+
               </option>
 
             </select>
 
             <small class="account-hint">
+
               Select the account you want to access.
+
             </small>
 
           </div>
 
-
           <!-- PASSWORD -->
+
           <div class="form-group">
 
             <label>Password</label>
 
             <input
+
               v-model="password"
+
               type="password"
+
               placeholder="Enter your password"
+
               required
+
             />
 
           </div>
+
       <div class="forgot-password-row">
+
   <router-link to="/forgot-password">
+
     Forgot Password?
+
   </router-link>
+
 </div>
 
           <!-- ERROR -->
+
           <div
+
             v-if="errorMessage"
+
             class="message error"
+
           >
+
             {{ errorMessage }}
+
           </div>
 
-
           <!-- LOGIN BUTTON -->
+
           <button
+
             type="submit"
+
             class="login-button"
+
             :disabled="loading"
+
           >
 
             <span v-if="loading">
+
               Logging in...
+
             </span>
 
             <span v-else>
+
               Login
+
             </span>
 
           </button>
 
         </form>
 
-
         <!-- REGISTER -->
+
         <p class="register-text">
 
           Don't have an account?
 
           <router-link to="/register">
+
             Create Account
+
           </router-link>
 
         </p>
 
-
         <router-link
+
           to="/"
+
           class="back-home"
+
         >
+
           ← Back to Home
+
         </router-link>
 
       </div>
 
     </div>
-  </div>
-</template>
 
+  </div>
+
+</template>
 
 <script setup lang="ts">
 
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { supabase } from '../lib/supabase'
 
+import { useRouter } from 'vue-router'
+
+import { supabase } from '../lib/supabase'
 
 const router = useRouter()
 
-
 const email = ref('')
+
 const password = ref('')
 
 const accountNumber = ref('1')
 
 const loading = ref(false)
+
 const errorMessage = ref('')
 
-
 /*
-|--------------------------------------------------------------------------
-| CREATE THE ACTUAL SUPABASE EMAIL
-|--------------------------------------------------------------------------
+
+\|--------------------------------------------------------------------------
+
+\| CREATE THE ACTUAL SUPABASE EMAIL
+
+\|--------------------------------------------------------------------------
+
 |
-| Account 1
-| example@gmail.com
+
+\| Account 1
+
+\| example\@gmail.com
+
 |
-| Account 2
-| example+2@gmail.com
+
+\| Account 2
+
+\| example+2\@gmail.com
+
 |
-| Account 3
-| example+3@gmail.com
+
+\| Account 3
+
+\| example+3\@gmail.com
+
 |
+
 */
 
 const getAccountEmail = () => {
 
   const cleanEmail = email.value
+
     .trim()
+
     .toLowerCase()
 
   if (accountNumber.value === '1') {
+
     return cleanEmail
+
   }
 
   const [username, domain] = cleanEmail.split('@')
 
   if (!username || !domain) {
+
     return cleanEmail
+
   }
 
   return `${username}+${accountNumber.value}@${domain}`
+
 }
 
-
 /*
-|--------------------------------------------------------------------------
-| CHECK EXISTING SESSION
-|--------------------------------------------------------------------------
+
+\|--------------------------------------------------------------------------
+
+\| CHECK EXISTING SESSION
+
+\|--------------------------------------------------------------------------
+
 */
 
 onMounted(async () => {
@@ -237,11 +328,14 @@ onMounted(async () => {
 
 })
 
-
 /*
-|--------------------------------------------------------------------------
-| LOGIN
-|--------------------------------------------------------------------------
+
+\|--------------------------------------------------------------------------
+
+\| LOGIN
+
+\|--------------------------------------------------------------------------
+
 */
 
 const loginUser = async () => {
@@ -256,8 +350,8 @@ const loginUser = async () => {
 
     const accountEmail = getAccountEmail()
 
-
     const { data, error } =
+
       await supabase.auth.signInWithPassword({
 
         email: accountEmail,
@@ -266,46 +360,49 @@ const loginUser = async () => {
 
       })
 
-
     if (error) {
 
       console.error('Login error:', error)
 
       errorMessage.value =
+
         'Invalid email, password, or account number. Please check your details and try again.'
 
       return
 
     }
 
-
     if (!data.session) {
 
       errorMessage.value =
+
         'Login was not completed. Please try again.'
 
       return
 
     }
 
-
     /*
+
     |----------------------------------------------------------------------
+
     | SUCCESSFUL LOGIN
+
     |----------------------------------------------------------------------
+
     */
 
     await router.replace('/dashboard')
-
 
   } catch (error: any) {
 
     console.error('Login error:', error)
 
     errorMessage.value =
-      error?.message ||
-      'Unable to login. Please check your details and try again.'
 
+      error?.message ||
+
+      'Unable to login. Please check your details and try again.'
 
   } finally {
 
@@ -317,23 +414,30 @@ const loginUser = async () => {
 
 </script>
 
-
 <style scoped>
 
 /* =================================
+
    LOGIN PAGE
-================================= */
+
+\================================= */
 
 .login-page {
 
   min-height: 100vh;
 
   background:
+
     radial-gradient(
+
       circle at top left,
+
       rgba(24, 184, 117, 0.08),
+
       transparent 35%
+
     ),
+
     #f7faf8;
 
   display: flex;
@@ -346,10 +450,11 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    MAIN CONTAINER
-================================= */
+
+\================================= */
 
 .login-container {
 
@@ -370,15 +475,18 @@ const loginUser = async () => {
   overflow: hidden;
 
   box-shadow:
+
     0 30px 80px rgba(6, 59, 43, 0.12),
+
     0 8px 25px rgba(6, 59, 43, 0.05);
 
 }
 
-
 /* =================================
+
    LEFT BRAND PANEL
-================================= */
+
+\================================= */
 
 .login-brand {
 
@@ -387,16 +495,27 @@ const loginUser = async () => {
   overflow: hidden;
 
   background:
+
     radial-gradient(
+
       circle at 85% 15%,
+
       rgba(24, 184, 117, 0.35),
+
       transparent 32%
+
     ),
+
     linear-gradient(
+
       145deg,
+
       #042f24 0%,
+
       #063b2b 45%,
+
       #0a8754 100%
+
     );
 
   color: white;
@@ -410,7 +529,6 @@ const loginUser = async () => {
   justify-content: center;
 
 }
-
 
 /* Decorative background glow */
 
@@ -436,7 +554,6 @@ const loginUser = async () => {
 
 }
 
-
 .login-brand::after {
 
   content: "";
@@ -457,12 +574,14 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    BRAND LOGO
-================================= */
+
+\================================= */
 
 .brand-logo,
+
 .mobile-logo {
 
   position: relative;
@@ -478,12 +597,19 @@ const loginUser = async () => {
   border-radius: 18px;
 
   background:
+
     linear-gradient(
+
       145deg,
+
       #e1fff1 0%,
+
       #77e7aa 42%,
+
       #18b875 72%,
+
       #08784f 100%
+
     );
 
   color: #063b2b;
@@ -501,17 +627,19 @@ const loginUser = async () => {
   letter-spacing: -2px;
 
   box-shadow:
+
     0 12px 28px rgba(6, 59, 43, 0.28),
+
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
 
   z-index: 2;
 
 }
 
-
 /* Logo decorative strokes */
 
 .brand-logo::before,
+
 .mobile-logo::before {
 
   content: "";
@@ -536,8 +664,8 @@ const loginUser = async () => {
 
 }
 
-
 .brand-logo::after,
+
 .mobile-logo::after {
 
   content: "";
@@ -560,10 +688,11 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    BRAND CONTENT
-================================= */
+
+\================================= */
 
 .login-brand h1 {
 
@@ -583,7 +712,6 @@ const loginUser = async () => {
 
 }
 
-
 .login-brand p {
 
   position: relative;
@@ -600,10 +728,11 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    BRAND FEATURES
-================================= */
+
+\================================= */
 
 .brand-feature {
 
@@ -626,7 +755,6 @@ const loginUser = async () => {
   font-weight: 600;
 
 }
-
 
 .brand-feature span {
 
@@ -652,10 +780,11 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    LOGIN CARD
-================================= */
+
+\================================= */
 
 .login-card {
 
@@ -671,7 +800,6 @@ const loginUser = async () => {
 
 }
 
-
 /* Hidden on desktop */
 
 .mobile-logo {
@@ -680,10 +808,11 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    HEADINGS
-================================= */
+
+\================================= */
 
 .login-card h2 {
 
@@ -701,7 +830,6 @@ const loginUser = async () => {
 
 }
 
-
 .subtitle {
 
   color: #6b7b73;
@@ -714,17 +842,17 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    FORM
-================================= */
+
+\================================= */
 
 .form-group {
 
   margin-bottom: 20px;
 
 }
-
 
 .form-group label {
 
@@ -740,8 +868,8 @@ const loginUser = async () => {
 
 }
 
-
 .form-group input,
+
 .form-group select {
 
   width: 100%;
@@ -763,12 +891,14 @@ const loginUser = async () => {
   font-size: 15px;
 
   transition:
+
     border-color 0.2s ease,
+
     box-shadow 0.2s ease,
+
     background 0.2s ease;
 
 }
-
 
 .form-group input::placeholder {
 
@@ -776,16 +906,16 @@ const loginUser = async () => {
 
 }
 
-
 .form-group input:hover,
+
 .form-group select:hover {
 
   border-color: #b8d7c9;
 
 }
 
-
 .form-group input:focus,
+
 .form-group select:focus {
 
   border-color: #0ea96a;
@@ -793,10 +923,10 @@ const loginUser = async () => {
   background: #ffffff;
 
   box-shadow:
+
     0 0 0 3px rgba(14, 169, 106, 0.11);
 
 }
-
 
 .form-group select {
 
@@ -806,10 +936,11 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    ACCOUNT HINT
-================================= */
+
+\================================= */
 
 .account-hint {
 
@@ -823,10 +954,11 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    ERROR MESSAGE
-================================= */
+
+\================================= */
 
 .message {
 
@@ -842,7 +974,6 @@ const loginUser = async () => {
 
 }
 
-
 .error {
 
   background: #fff1f2;
@@ -853,10 +984,11 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    LOGIN BUTTON
-================================= */
+
+\================================= */
 
 .login-button {
 
@@ -869,10 +1001,15 @@ const loginUser = async () => {
   border-radius: 12px;
 
   background:
+
     linear-gradient(
+
       135deg,
+
       #0ea96a,
+
       #078253
+
     );
 
   color: #ffffff;
@@ -884,39 +1021,46 @@ const loginUser = async () => {
   cursor: pointer;
 
   transition:
+
     transform 0.2s ease,
+
     box-shadow 0.2s ease,
+
     background 0.2s ease;
 
   box-shadow:
+
     0 10px 22px rgba(14, 169, 106, 0.18);
 
 }
 
-
 .login-button:hover {
 
   background:
+
     linear-gradient(
+
       135deg,
+
       #0fae70,
+
       #066f48
+
     );
 
   transform: translateY(-1px);
 
   box-shadow:
+
     0 14px 28px rgba(14, 169, 106, 0.24);
 
 }
-
 
 .login-button:active {
 
   transform: translateY(0);
 
 }
-
 
 .login-button:disabled {
 
@@ -930,10 +1074,11 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    REGISTER LINK
-================================= */
+
+\================================= */
 
 .register-text {
 
@@ -947,7 +1092,6 @@ const loginUser = async () => {
 
 }
 
-
 .register-text a {
 
   color: #0a8754;
@@ -960,17 +1104,17 @@ const loginUser = async () => {
 
 }
 
-
 .register-text a:hover {
 
   color: #063b2b;
 
 }
 
-
 /* =================================
+
    BACK HOME
-================================= */
+
+\================================= */
 
 .back-home {
 
@@ -985,11 +1129,12 @@ const loginUser = async () => {
   font-size: 14px;
 
   transition:
+
     color 0.2s ease,
+
     transform 0.2s ease;
 
 }
-
 
 .back-home:hover {
 
@@ -997,10 +1142,11 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    MOBILE
-================================= */
+
+\================================= */
 
 @media (max-width: 800px) {
 
@@ -1048,10 +1194,11 @@ const loginUser = async () => {
 
 }
 
-
 /* =================================
+
    SMALL MOBILE
-================================= */
+
+\================================= */
 
 @media (max-width: 480px) {
 
@@ -1100,6 +1247,7 @@ const loginUser = async () => {
   }
 
   .form-group input,
+
   .form-group select {
 
     padding: 14px;
@@ -1109,22 +1257,35 @@ const loginUser = async () => {
 }
 
 .forgot-password-row {
+
   display: flex;
+
   justify-content: flex-end;
+
   margin-top: -10px;
+
   margin-bottom: 20px;
+
 }
 
 .forgot-password-row a {
+
   color: #0a8754;
+
   font-size: 13px;
+
   font-weight: 700;
+
   text-decoration: none;
+
 }
 
 .forgot-password-row a:hover {
+
   color: #063b2b;
+
   text-decoration: underline;
+
 }
 
 </style>

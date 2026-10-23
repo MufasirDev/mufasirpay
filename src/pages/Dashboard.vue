@@ -10,7 +10,7 @@
 
         <div class="brand-icon">
 
-          <span>M</span>
+           <span>M</span>
 
         </div>
 

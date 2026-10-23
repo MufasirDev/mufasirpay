@@ -1,14 +1,14 @@
 <template>
-         <div class="auth-page">
-         <div class="auth-left">
-          <div class="brand">
-       <div class="brand-icon">M</div>
-    <span>Mufasir<span>Pay</span></span>
+<div class="auth-page">
+<div class="auth-left">
+<div class="brand">
+<div class="brand-icon"><img src="/mufasirpay.logo.png" alt="MufasirPay logo" style="width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 1;" /></div>
+<span>Mufasir<span>Pay</span></span>
 </div>
-   <div class="auth-message">
+<div class="auth-message">
 <span>WELCOME TO MUFASIRPAY</span>
-     <h1>
-        Your money.
+<h1>
+Your money.
 <strong>Your future.</strong>
 </h1>
 <p>
@@ -34,7 +34,7 @@ secure digital wallet built for everyday payments.
 <div class="auth-right">
 <div class="auth-box">
 <div class="mobile-brand">
-<div class="brand-icon">M</div>
+<div class="brand-icon"><img src="/logo.png" alt="MufasirPay logo" style="width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 1;" /></div>
 <span>Mufasir<span>Pay</span></span>
 </div>
 <div class="form-heading">
