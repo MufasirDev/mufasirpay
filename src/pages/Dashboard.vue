@@ -800,7 +800,7 @@
 
             <div
 
-              v-for="transaction in transactions"
+              v-for="transaction in transactions.slice(0, 7)"
 
               :key="transaction.id"
 

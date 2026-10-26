@@ -130,6 +130,7 @@
     >
       {{ loadingMore ? 'Loading...' : 'Load more notifications' }}
     </button>
+
   </div>
 </template>
 
