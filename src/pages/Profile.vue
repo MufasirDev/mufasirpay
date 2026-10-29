@@ -643,29 +643,21 @@
 
 
               <button
+                v-if="kycStatus !== 'verified'"
+               @click="showKycInfo = !showKycInfo"
+               >
+               Start verification
+             </button>
 
-                type="button"
 
-                class="kyc-button"
-
-                @click="showKycInfo = !showKycInfo"
-
-              >
-
-                {{
-
-                  showKycInfo
-
-                    ? 'Close information'
-
-                    : 'Start verification'
-
-                }}
-
-                <span aria-hidden="true">→</span>
-
-              </button>
-
+              <div
+               v-if="kycStatus === 'verified'"
+                class="kyc-verified-badge"
+                 role="status"
+                   >
+                 <span aria-hidden="true">✓</span>
+                 <span>Identity Verified</span>
+            </div>
 
 
 
@@ -845,6 +837,7 @@
 
 
 
+
 <script setup lang="ts">
 
 import {
@@ -950,78 +943,117 @@ async function loadKycStatus() {
   }
 }
 
-async function submitKyc() {
-  const { data: { session }, error } =
-  await supabase.auth.getSession()
 
-console.log('Has active session:', !!session)
-console.log('Session error:', error?.message)
+async function submitKyc() {
   kycError.value = ''
   kycMessage.value = ''
+
   if (!kycConsent.value) {
-    kycError.value = 'Please consent to identity verification before continuing.'
+    kycError.value =
+      'Please consent to identity verification before continuing.'
     return
   }
+
   const idNumber = kycForm.value.idNumber.trim()
   const firstName = kycForm.value.firstName.trim()
   const lastName = kycForm.value.lastName.trim()
   const dateOfBirth = kycForm.value.dateOfBirth
+
   if (!/^\d{11}$/.test(idNumber)) {
-    kycError.value = 'Your NIN or BVN must contain exactly 11 digits.'
+    kycError.value =
+      'Your NIN or BVN must contain exactly 11 digits.'
     return
   }
+
   if (!firstName || !lastName || !dateOfBirth) {
     kycError.value = 'Please complete all required fields.'
     return
   }
-  if (dateOfBirth >= new Date().toISOString().slice(0, 10)) {
+
+  const today = new Date().toISOString().slice(0, 10)
+  const parsedDate = new Date(`${dateOfBirth}T00:00:00Z`)
+
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth) ||
+    !Number.isFinite(parsedDate.getTime()) ||
+    parsedDate.toISOString().slice(0, 10) !== dateOfBirth ||
+    dateOfBirth >= today
+  ) {
     kycError.value = 'Please enter a valid date of birth.'
     return
   }
+
   kycSubmitting.value = true
+
   try {
-    const { data: { session }, error: authError } = await supabase.auth.getSession()
-    if (authError || !session) throw new Error('Your session has expired. Please log in again.')
-    console.log(
-  'Access token available:',
-  !!session?.access_token,
-)
-    const { data, error } = await supabase.functions.invoke('verify-identity', {
-      body: { idType: kycForm.value.idType, idNumber, firstName, lastName, dateOfBirth },
-    })
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession()
+
+    if (authError || !session) {
+      throw new Error(
+        'Your session has expired. Please log in again.',
+      )
+    }
+
+    const { data, error } = await supabase.functions.invoke(
+      'verify-identity',
+      {
+        body: {
+          idType: kycForm.value.idType,
+          idNumber,
+          firstName,
+          lastName,
+          dateOfBirth,
+          consent: kycConsent.value,
+        },
+      },
+    )
+
     if (error) {
       console.error('Identity verification request failed:', error)
-      throw new Error('We could not complete verification. Please try again later.')
+      throw new Error(
+        'We could not complete verification. Please try again later.',
+      )
     }
-    if (data?.error) throw new Error(data.error)
+
+    if (data?.error) {
+      throw new Error(data.error)
+    }
+
     if (data?.status === 'verified') {
       kycStatus.value = 'verified'
-      kycMessage.value = 'Your identity has been verified successfully.'
+      kycMessage.value =
+        'Your identity has been verified successfully.'
       showKycInfo.value = false
       kycForm.value.idNumber = ''
+      kycConsent.value = false
     } else if (data?.status === 'rejected') {
       kycStatus.value = 'rejected'
-      kycMessage.value = data.message || 'Your identity could not be verified.'
+      kycMessage.value =
+        data.message || 'Your identity could not be verified.'
       kycForm.value.idNumber = ''
+      kycConsent.value = false
     } else {
-      kycMessage.value = data?.message || 'Your verification could not be confirmed. Please try again or contact support.'
+      kycMessage.value =
+        data?.message ||
+        'Your verification could not be confirmed. Please try again or contact support.'
     }
+
     await loadKycStatus()
   } catch (error: unknown) {
     console.error('KYC submission error:', error)
-    kycError.value = error instanceof Error ? error.message : 'Something went wrong during verification.'
+
+    kycError.value =
+      error instanceof Error
+        ? error.message
+        : 'Something went wrong during verification.'
   } finally {
     kycSubmitting.value = false
   }
 }
 
-function formatKycStatus(status: string) {
-  const labels: Record<string, string> = {
-    not_started: 'Not verified', pending: 'Pending review', submitted: 'Submitted',
-    verified: 'Verified', rejected: 'Verification unsuccessful', failed: 'Verification failed',
-  }
-  return labels[status] || 'Pending review'
-}
 
 // INITIALS
 
@@ -1743,6 +1775,20 @@ async function logout() {
 
 // ----------------------------------
 
+function formatKycStatus(status: string) {
+  const labels: Record<string, string> = {
+    not_started: 'Not verified',
+    pending: 'Pending review',
+    submitted: 'Submitted',
+    verified: 'Verified',
+    rejected: 'Verification unsuccessful',
+    failed: 'Verification failed',
+  }
+
+  return labels[status] || 'Pending review'
+}
+
+
 // PAGE LOAD
 
 // ----------------------------------
@@ -1758,8 +1804,6 @@ onMounted(() => {
 })
 
 </script>
-
-
 
 <style scoped>
 
@@ -5099,4 +5143,32 @@ onMounted(() => {
 .kyc-info form { margin-top: 18px; }
 .kyc-info h3 { margin-bottom: 10px; }
 .kyc-info p { margin-bottom: 12px; }
+
+
+.kyc-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: #ecfdf3;
+  border: 1px solid #a6f4c5;
+  color: #067647;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.kyc-verified-badge span:first-child {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #067647;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+
 </style>

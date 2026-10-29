@@ -231,7 +231,89 @@
         </p>
 
       </section>
+<!-- DEDICATED VIRTUAL ACCOUNT -->
+<section class="virtual-account-card">
+  <div class="virtual-account-header">
+    <div>
+      <span class="section-badge">BANK TRANSFER</span>
+      <h2>Your Dedicated Account</h2>
+      <p>
+        Transfer money from any Nigerian bank to fund your MufasirPay wallet.
+      </p>
+    </div>
 
+    <div class="virtual-account-icon">🏦</div>
+  </div>
+
+  <div
+    v-if="virtualAccount"
+    class="virtual-account-details"
+  >
+    <div class="account-detail">
+      <span>Bank Name</span>
+      <strong>{{ virtualAccount.bank_name }}</strong>
+    </div>
+
+    <div class="account-detail">
+      <span>Account Name</span>
+      <strong>{{ virtualAccount.account_name }}</strong>
+    </div>
+
+    <div class="account-number-box">
+      <div>
+        <span>Account Number</span>
+        <strong>{{ virtualAccount.account_number }}</strong>
+      </div>
+
+      <button
+        type="button"
+        class="copy-account-button"
+        @click="copyAccountNumber"
+      >
+        {{ copiedAccount ? 'Copied!' : 'Copy' }}
+      </button>
+    </div>
+
+    <p class="account-note">
+      Transfer only in NGN. Your wallet will be credited after the payment
+      is confirmed.
+    </p>
+  </div>
+
+  <div v-else class="create-account-box">
+    <p>
+      Get your personal bank account details to receive transfers directly
+      into your MufasirPay wallet.
+    </p>
+
+    <button
+      type="button"
+      class="create-account-button"
+      :disabled="creatingVirtualAccount"
+      @click="createVirtualAccount"
+    >
+      {{
+        creatingVirtualAccount
+          ? 'Creating Account...'
+          : 'Generate Virtual Account →'
+      }}
+    </button>
+  </div>
+
+  <div
+    v-if="virtualAccountError"
+    class="message error"
+  >
+    {{ virtualAccountError }}
+  </div>
+
+  <div
+    v-if="virtualAccountSuccess"
+    class="message success"
+  >
+    {{ virtualAccountSuccess }}
+  </div>
+</section>
     </main>
   </div>
 </template>
@@ -292,6 +374,24 @@ const accessCode = ref('')
 
 const errorMessage = ref('')
 const successMessage = ref('')
+// DEDICATED VIRTUAL ACCOUNT
+
+interface VirtualAccount {
+  id?: string
+  account_number: string
+  account_name: string
+  bank_name: string
+  currency: string
+  status: string
+}
+
+const virtualAccount = ref<VirtualAccount | null>(null)
+
+const creatingVirtualAccount = ref(false)
+const copiedAccount = ref(false)
+
+const virtualAccountError = ref('')
+const virtualAccountSuccess = ref('')
 
 const quickAmounts = [
   1000,
@@ -650,10 +750,132 @@ const verifyPayment =
     }
 
   }
+  // =====================================
+// LOAD EXISTING VIRTUAL ACCOUNT
+// =====================================
+
+async function loadVirtualAccount() {
+  virtualAccountError.value = ''
+
+  try {
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      router.push('/login')
+      return
+    }
+
+    const { data, error } = await supabase
+      .from('virtual_accounts')
+      .select(
+        'id, account_number, account_name, bank_name, currency, status'
+      )
+      .eq('user_id', user.id)
+      .eq('provider', 'paystack')
+      .maybeSingle()
+
+    if (error) {
+      console.error('Virtual account lookup failed:', error.message)
+      throw new Error('Unable to load your virtual account.')
+    }
+
+    if (data) {
+      virtualAccount.value = data
+    }
+  } catch (error: any) {
+    virtualAccountError.value =
+      error?.message || 'Unable to load your virtual account.'
+  }
+}
+
+// =====================================
+// CREATE VIRTUAL ACCOUNT
+// =====================================
+
+async function createVirtualAccount() {
+  creatingVirtualAccount.value = true
+  virtualAccountError.value = ''
+  virtualAccountSuccess.value = ''
+
+  try {
+    const {
+      data,
+      error,
+    } = await supabase.functions.invoke(
+      'create-virtual-account',
+      {
+        body: {},
+      }
+    )
+
+    if (error) {
+      let message = error.message || 'Unable to create your virtual account.'
+
+      if (typeof error.context?.json === 'function') {
+        try {
+          const details = await error.context.json()
+
+          if (details?.error) {
+            message = details.error
+          }
+        } catch {
+          // Keep the original error message.
+        }
+      }
+
+      throw new Error(message)
+    }
+
+    if (!data?.success || !data?.account) {
+      throw new Error(
+        data?.error || 'The virtual account could not be created.'
+      )
+    }
+
+    virtualAccount.value = data.account
+
+    virtualAccountSuccess.value =
+      'Your dedicated virtual account is ready!'
+  } catch (error: any) {
+    console.error('Create virtual account error:', error)
+
+    virtualAccountError.value =
+      error?.message || 'Unable to create your virtual account.'
+  } finally {
+    creatingVirtualAccount.value = false
+  }
+}
+
+// =====================================
+// COPY ACCOUNT NUMBER
+// =====================================
+
+async function copyAccountNumber() {
+  if (!virtualAccount.value?.account_number) return
+
+  try {
+    await navigator.clipboard.writeText(
+      virtualAccount.value.account_number
+    )
+
+    copiedAccount.value = true
+
+    setTimeout(() => {
+      copiedAccount.value = false
+    }, 2000)
+  } catch {
+    virtualAccountError.value =
+      'Unable to copy automatically. Please select the account number and copy it.'
+  }
+}
 
 
 onMounted(() => {
   loadWallet()
+  loadVirtualAccount()
 })
 
 </script>
@@ -1708,6 +1930,185 @@ onMounted(() => {
     font-size: 11px;
   }
 
+}
+
+
+/* =====================================
+   DEDICATED VIRTUAL ACCOUNT
+===================================== */
+
+.virtual-account-card {
+  max-width: 900px;
+  margin: 24px auto 0;
+  padding: 31px;
+  background: #ffffff;
+  border: 1px solid #e7f1eb;
+  border-radius: 22px;
+  box-shadow: 0 9px 30px rgba(8, 74, 49, 0.05);
+}
+
+.virtual-account-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.virtual-account-header h2 {
+  margin: 12px 0 8px;
+  color: #14271f;
+  font-size: 22px;
+}
+
+.virtual-account-header p,
+.create-account-box p {
+  color: #7e8c85;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.section-badge {
+  display: inline-block;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: #eafaf2;
+  color: #078052;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+}
+
+.virtual-account-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 55px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: #eafaf2;
+  font-size: 25px;
+}
+
+.virtual-account-details {
+  padding: 20px;
+  border: 1px solid #e3f0e8;
+  border-radius: 16px;
+  background: #fbfefc;
+}
+
+.account-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 20px;
+}
+
+.account-detail span,
+.account-number-box span {
+  color: #7e8c85;
+  font-size: 11px;
+}
+
+.account-detail strong,
+.account-number-box strong {
+  color: #14271f;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.account-number-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 16px;
+  border: 1px dashed #a8dcc1;
+  border-radius: 12px;
+  background: #f2fbf6;
+}
+
+.account-number-box > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.account-number-box strong {
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
+.copy-account-button {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border: 1px solid #a8dcc1;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #087b51;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.copy-account-button:hover {
+  background: #e7f8ef;
+}
+
+.account-note {
+  margin: 16px 0 0;
+  color: #718078;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.create-account-box {
+  padding: 20px;
+  border: 1px solid #e3f0e8;
+  border-radius: 16px;
+  background: #fbfefc;
+}
+
+.create-account-button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px;
+  border: none;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #0ea96a, #078253);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.create-account-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.create-account-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 650px) {
+  .virtual-account-card {
+    padding: 24px 20px;
+  }
+
+  .virtual-account-header h2 {
+    font-size: 19px;
+  }
+
+  .account-number-box {
+    align-items: flex-start;
+  }
+
+  .account-number-box strong {
+    font-size: 17px;
+  }
 }
 
 </style>
