@@ -1,3 +1,4 @@
+
 import { createRouter, createWebHistory } from 'vue-router'
 
 import { supabase } from '../lib/supabase'
@@ -8,6 +9,7 @@ import Login from '../pages/Login.vue'
 import Dashboard from '../pages/Dashboard.vue'
 import Wallet from '../pages/Wallet.vue'
 import Transfer from '../pages/Transfer.vue'
+import BankTransfer from '../pages/BankTransfer.vue'
 import Transactions from '../pages/Transactions.vue'
 import Airtime from '../pages/Airtime.vue'
 import Profile from '../pages/Profile.vue'
@@ -28,151 +30,113 @@ const router = createRouter({
       name: 'Home',
       component: Home
     },
-
     {
       path: '/register',
       name: 'Register',
       component: Register
     },
-
     {
       path: '/login',
       name: 'Login',
       component: Login
     },
-
-    // ================================
-    // PROTECTED PAGES
-    // ================================
-
     {
       path: '/dashboard',
       name: 'Dashboard',
       component: Dashboard,
-      meta: {
-        requiresAuth: true
-      }
+      meta: { requiresAuth: true }
     },
-
     {
       path: '/wallet',
       name: 'Wallet',
       component: Wallet,
-      meta: {
-        requiresAuth: true
-      }
+      meta: { requiresAuth: true }
     },
-
     {
       path: '/transfer',
       name: 'Transfer',
       component: Transfer,
-      meta: {
-        requiresAuth: true
-      }
+      meta: { requiresAuth: true }
     },
-
+    {
+      path: '/bank-transfer',
+      name: 'BankTransfer',
+      component: BankTransfer,
+      meta: { requiresAuth: true }
+    },
     {
       path: '/transactions',
       name: 'Transactions',
       component: Transactions,
-      meta: {
-        requiresAuth: true
-      }
+      meta: { requiresAuth: true }
     },
-
     {
       path: '/airtime',
       name: 'Airtime',
       component: Airtime,
-      meta: {
-        requiresAuth: true
-      }
+      meta: { requiresAuth: true }
     },
-
     {
       path: '/profile',
       name: 'Profile',
       component: Profile,
-      meta: {
-        requiresAuth: true
-      }
+      meta: { requiresAuth: true }
     },
-
     {
       path: '/bills',
       name: 'Bills',
       component: Bills,
-      meta: {
-        requiresAuth: true
-      }
-    },
-
-    {
-  path: '/notifications',
-  name: 'Notifications',
-  component: Notifications,
-  meta: {
-    requiresAuth: true
-  }
+      meta: { requiresAuth: true }
     },
     {
-  path: '/analytics',
-  name: 'Analytics',
-  component: Analytics,
-  meta: { requiresAuth: true },
-},
-{
-  path: '/security',
-  name: 'Security',
-  component: Security,
-  meta: {
-    requiresAuth: true
-  },
-},
-{
-  path: '/support',
-  name: 'HelpSupport',
-  component: HelpSupport,
-  meta: {
-    requiresAuth: true
-  }
-},
-{
-  path: '/forgot-password',
-  name: 'ForgotPassword',
-  component: ForgotPassword
-},
-{
-  path: '/reset-password',
-  name: 'ResetPassword',
-  component: ResetPassword
-},
+      path: '/notifications',
+      name: 'Notifications',
+      component: Notifications,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/analytics',
+      name: 'Analytics',
+      component: Analytics,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/security',
+      name: 'Security',
+      component: Security,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/support',
+      name: 'HelpSupport',
+      component: HelpSupport,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/forgot-password',
+      name: 'ForgotPassword',
+      component: ForgotPassword
+    },
+    {
+      path: '/reset-password',
+      name: 'ResetPassword',
+      component: ResetPassword
+    }
   ]
 })
 
-// ============================================
-// AUTHENTICATION GUARD
-// ============================================
-
+// Authentication guard
 router.beforeEach(async (to) => {
   const {
     data: { session }
   } = await supabase.auth.getSession()
 
-  // User is NOT logged in
   if (to.meta.requiresAuth && !session) {
-    return {
-      name: 'Login'
-    }
+    return { name: 'Login' }
   }
 
-  // User IS already logged in
-  // Don't allow them to go back to login
   if (to.name === 'Login' && session) {
-    return {
-      name: 'Dashboard'
-    }
+    return { name: 'Dashboard' }
   }
 
   return true

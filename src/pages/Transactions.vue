@@ -1,380 +1,122 @@
+
 <template>
-
   <div class="transactions-page">
-
-    <!-- SIDEBAR -->
-
-    <aside
-
-      class="sidebar"
-
-      :class="{ open: sidebarOpen }"
-
-    >
-
+    <aside class="sidebar" :class="{ open: sidebarOpen }">
       <div class="sidebar-brand">
-
         <div class="brand-icon">M</div>
-
         <div>
-
           <h1>MufasirPay</h1>
-
           <span>Digital Banking</span>
-
         </div>
-
       </div>
 
       <nav class="sidebar-nav">
-
-        <button
-
-          type="button"
-
-          class="nav-item"
-
-          @click="go('/dashboard')"
-
-        >
-
-          <span class="nav-icon">⌂</span>
-
-          <span>Dashboard</span>
-
+        <button type="button" class="nav-item" @click="go('/dashboard')">
+          <span class="nav-icon">⌂</span><span>Dashboard</span>
         </button>
-
-        <button
-
-          type="button"
-
-          class="nav-item"
-
-          @click="go('/wallet')"
-
-        >
-
-          <span class="nav-icon">₦</span>
-
-          <span>Wallet</span>
-
+        <button type="button" class="nav-item" @click="go('/wallet')">
+          <span class="nav-icon">₦</span><span>Wallet</span>
         </button>
-
-        <button
-
-          type="button"
-
-          class="nav-item"
-
-          @click="go('/transfer')"
-
-        >
-
-          <span class="nav-icon">⇄</span>
-
-          <span>Transfer</span>
-
+        <button type="button" class="nav-item" @click="go('/transfer')">
+          <span class="nav-icon">⇄</span><span>Transfer</span>
         </button>
-
-        <button
-
-          type="button"
-
-          class="nav-item"
-
-          @click="go('/airtime')"
-
-        >
-
-          <span class="nav-icon">☎</span>
-
-          <span>Airtime & Data</span>
-
+        <button type="button" class="nav-item" @click="go('/airtime')">
+          <span class="nav-icon">☎</span><span>Airtime & Data</span>
         </button>
-
-        <button
-
-          type="button"
-
-          class="nav-item"
-
-          @click="go('/bills')"
-
-        >
-
-          <span class="nav-icon">▣</span>
-
-          <span>Pay Bills</span>
-
+        <button type="button" class="nav-item" @click="go('/bills')">
+          <span class="nav-icon">▣</span><span>Pay Bills</span>
         </button>
-
-        <button
-
-          type="button"
-
-          class="nav-item active"
-
-        >
-
-          <span class="nav-icon">☷</span>
-
-          <span>Transactions</span>
-
+        <button type="button" class="nav-item active">
+          <span class="nav-icon">☷</span><span>Transactions</span>
         </button>
-
-        <button
-
-          type="button"
-
-          class="nav-item"
-
-          @click="go('/profile')"
-
-        >
-
-          <span class="nav-icon">◉</span>
-
-          <span>Profile</span>
-
+        <button type="button" class="nav-item" @click="go('/profile')">
+          <span class="nav-icon">◉</span><span>Profile</span>
         </button>
-
       </nav>
 
       <div class="sidebar-bottom">
-
-        <button
-
-          type="button"
-
-          class="logout-side-btn"
-
-          @click="logout"
-
-        >
-
-          <span class="nav-icon">↪</span>
-
-          <span>Logout</span>
-
+        <button type="button" class="logout-side-btn" @click="logout">
+          <span class="nav-icon">↪</span><span>Logout</span>
         </button>
-
       </div>
-
     </aside>
 
-    <!-- MOBILE OVERLAY -->
+    <div v-if="sidebarOpen" class="overlay" @click="sidebarOpen = false"></div>
 
-    <div
-
-      v-if="sidebarOpen"
-
-      class="overlay"
-
-      @click="sidebarOpen = false"
-
-    ></div>
-
-    <!-- MOBILE MENU -->
-
-    <button
-
-      type="button"
-
-      class="menu-btn"
-
-      @click="sidebarOpen = !sidebarOpen"
-
-    >
-
+    <button type="button" class="menu-btn" @click="sidebarOpen = !sidebarOpen">
       ☰
-
     </button>
 
-    <!-- MAIN CONTENT -->
-
     <main class="main-content">
+      <header class="page-header">
+        <div>
+          <h1>Transactions</h1>
+          <p>Track and manage your MufasirPay activity.</p>
+        </div>
+        <button class="export-btn" @click="exportCSV">↓ Export CSV</button>
+      </header>
 
-      <!-- PAGE HEADER -->
+      <section class="filters-card">
+        <input
+          v-model="searchQuery"
+          type="search"
+          placeholder="Search transactions..."
+          class="filter-input"
+        />
 
-<header class="page-header">
+        <select v-model="statusFilter" class="filter-input">
+          <option value="all">All statuses</option>
+          <option value="successful">Successful</option>
+          <option value="processing">Processing</option>
+          <option value="pending">Pending</option>
+          <option value="failed">Failed</option>
+        </select>
 
-  <div>
+        <select v-model="typeFilter" class="filter-input">
+          <option value="all">All transactions</option>
+          <option value="income">Money in</option>
+          <option value="expense">Money out</option>
+        </select>
 
-    <h1>Transactions</h1>
+        <input v-model="startDate" type="date" class="filter-input" aria-label="Start date" />
+        <input v-model="endDate" type="date" class="filter-input" aria-label="End date" />
 
-    <p>Track and manage your MufasirPay activity.</p>
+        <button class="clear-btn" @click="clearFilters">Clear filters</button>
+      </section>
 
-  </div>
-
-  <button class="export-btn" @click="exportCSV">
-
-    ↓ Export CSV
-
-  </button>
-
-</header>
-
-<!-- SEARCH AND FILTERS -->
-
-<section class="filters-card">
-
-  <input
-
-    v-model="searchQuery"
-
-    type="search"
-
-    placeholder="Search transactions..."
-
-    class="filter-input"
-
-  />
-
-  <select v-model="statusFilter" class="filter-input">
-
-    <option value="all">All statuses</option>
-
-    <option value="successful">Successful</option>
-
-    <option value="pending">Pending</option>
-
-    <option value="failed">Failed</option>
-
-  </select>
-
-  <select v-model="typeFilter" class="filter-input">
-
-    <option value="all">All transactions</option>
-
-    <option value="income">Money in</option>
-
-    <option value="expense">Money out</option>
-
-  </select>
-
-  <input
-
-    v-model="startDate"
-
-    type="date"
-
-    class="filter-input"
-
-    aria-label="Start date"
-
-  />
-
-  <input
-
-    v-model="endDate"
-
-    type="date"
-
-    class="filter-input"
-
-    aria-label="End date"
-
-  />
-
-  <button class="clear-btn" @click="clearFilters">
-
-    Clear filters
-
-  </button>
-
-</section>
-
-<p class="results-count">
-
-  Showing {{ filteredTransactions.length }} of
-
-  {{ transactions.length }} transactions
-
-</p>
-
-      <!-- SUMMARY -->
+      <p class="results-count">
+        Showing {{ filteredTransactions.length }} of
+        {{ transactions.length }} transactions
+      </p>
 
       <div class="summary-grid">
-
         <div class="summary-card">
-
           <p>Total Transactions</p>
-
           <h2>{{ transactions.length }}</h2>
-
         </div>
-
         <div class="summary-card">
-
           <p>Total Money In</p>
-
           <h2>₦{{ totalIncome }}</h2>
-
         </div>
-
         <div class="summary-card">
-
           <p>Total Money Out</p>
-
           <h2>₦{{ totalExpenses }}</h2>
-
         </div>
-
       </div>
 
-      <!-- LOADING -->
-
-      <div
-
-        v-if="loading"
-
-        class="state-card"
-
-      >
-
+      <div v-if="loading" class="state-card">
         Loading transactions...
-
       </div>
 
-      <!-- ERROR -->
-
-      <div
-
-        v-else-if="errorMessage"
-
-        class="state-card error-state"
-
-      >
-
+      <div v-else-if="errorMessage" class="state-card error-state">
         {{ errorMessage }}
-
       </div>
 
-      <!-- EMPTY -->
-
-      <div
-
-        v-else-if="transactions.length === 0"
-
-        class="state-card"
-
-      >
-
+      <div v-else-if="transactions.length === 0" class="state-card">
         <div class="empty-icon">↔</div>
-
         <h3>No transactions yet</h3>
-
-        <p>
-
-          Your wallet activity will appear here
-
-          when you fund your wallet or send money.
-
-        </p>
-
+        <p>Your wallet activity will appear here when you fund your wallet or send money.</p>
       </div>
-
-      <!-- TRANSACTIONS -->
 
       <div v-else-if="filteredTransactions.length === 0" class="state-card">
         <div class="empty-icon">⌕</div>
@@ -383,12 +125,23 @@
       </div>
 
       <div v-else class="monthly-transaction-groups">
-        <section v-for="group in groupedTransactions" :key="group.key" class="month-group">
-          <h2 class="month-heading">{{ group.label }} <span>{{ group.items.length }} {{ group.items.length === 1 ? 'transaction' : 'transactions' }}</span></h2>
+        <section
+          v-for="group in groupedTransactions"
+          :key="group.key"
+          class="month-group"
+        >
+          <h2 class="month-heading">
+            {{ group.label }}
+            <span>
+              {{ group.items.length }}
+              {{ group.items.length === 1 ? 'transaction' : 'transactions' }}
+            </span>
+          </h2>
+
           <div class="transaction-list">
             <div
               v-for="transaction in group.items"
-              :key="transaction.id"
+              :key="`${transaction.source || 'internal'}-${transaction.id}`"
               class="transaction-item"
               role="button"
               tabindex="0"
@@ -396,362 +149,300 @@
               @keydown.enter.prevent="openReceipt(transaction)"
               @keydown.space.prevent="openReceipt(transaction)"
             >
+              <div class="transaction-left">
+                <div
+                  class="transaction-icon"
+                  :class="isIncome(transaction) ? 'money-in' : 'money-out'"
+                >
+                  {{ isIncome(transaction) ? '↓' : '↑' }}
+                </div>
 
-          <div class="transaction-left">
+                <div class="transaction-details">
+                  <h3>{{ transactionTitle(transaction) }}</h3>
+                  <p>
+                    {{ transaction.description || 'MufasirPay transaction' }}
+                  </p>
 
-            <div
+                  <small v-if="transaction.source === 'bank_transfer'">
+                    {{ transaction.bank_name || 'External bank' }}
+                    · {{ transaction.account_number || 'Account unavailable' }}
+                  </small>
 
-              class="transaction-icon"
+                  <small>
+                    {{ formatDate(transaction.created_at) }}
+                  </small>
+                </div>
+              </div>
 
-              :class="
+              <div class="transaction-right">
+                <strong :class="isIncome(transaction) ? 'credit' : 'debit'">
+                  {{ isIncome(transaction) ? '+' : '-' }}₦{{
+                    Number(transaction.amount || 0).toLocaleString('en-NG', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                    })
+                  }}
+                </strong>
 
-                transaction.receiver_id === userId
-
-                  ? 'money-in'
-
-                  : 'money-out'
-
-              "
-
-            >
-
-              {{
-
-                transaction.receiver_id === userId
-
-                  ? '↓'
-
-                  : '↑'
-
-              }}
-
+                <span class="status" :class="String(transaction.status || '').toLowerCase()">
+                  {{ transaction.status || 'Unknown' }}
+                </span>
+              </div>
             </div>
-
-            <div class="transaction-details">
-
-              <h3>
-
-                {{ transactionTitle(transaction) }}
-
-              </h3>
-
-              <p>
-
-                {{
-
-                  transaction.description ||
-
-                  'MufasirPay transaction'
-
-                }}
-
-              </p>
-
-              <small>
-
-                {{ formatDate(transaction.created_at) }}
-
-              </small>
-
-            </div>
-
-          </div>
-
-          <div class="transaction-right">
-
-            <strong
-
-              :class="
-
-                transaction.receiver_id === userId
-
-                  ? 'credit'
-
-                  : 'debit'
-
-              "
-
-            >
-
-              {{
-
-                transaction.receiver_id === userId
-
-                  ? '+'
-
-                  : '-'
-
-              }}₦{{
-
-                Number(
-
-                  transaction.amount
-
-                ).toLocaleString(
-
-                  'en-NG',
-
-                  {
-
-                    minimumFractionDigits: 2
-
-                  }
-
-                )
-
-              }}
-
-            </strong>
-
-            <span
-
-              class="status"
-
-              :class="transaction.status"
-
-            >
-
-              {{ transaction.status }}
-
-            </span>
-
-            </div>
-          </div>
           </div>
         </section>
       </div>
 
-      <div v-if="selectedTransaction" class="receipt-overlay" @click.self="closeReceipt">
-        <section class="receipt-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title">
+      <!-- RECEIPT MODAL -->
+      <div
+        v-if="selectedTransaction"
+        class="receipt-overlay"
+        @click.self="closeReceipt"
+      >
+        <section
+          class="receipt-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="receipt-title"
+        >
           <div class="receipt-top no-print">
             <span>TRANSACTION RECEIPT</span>
-            <button type="button" class="receipt-close" aria-label="Close receipt" @click="closeReceipt">×</button>
+            <button
+              type="button"
+              class="receipt-close"
+              aria-label="Close receipt"
+              @click="closeReceipt"
+            >
+              ×
+            </button>
           </div>
+
           <div id="printable-receipt" class="receipt-paper">
-            <div class="receipt-brand"><div class="receipt-brand-icon">M</div><div><strong>MufasirPay</strong><small>Digital Banking</small></div></div>
-            <div class="receipt-status" :class="String(selectedTransaction.status || 'pending').toLowerCase()">{{ selectedTransaction.status || 'Status unavailable' }}</div>
+            <div class="receipt-brand">
+              <div class="receipt-brand-icon">M</div>
+              <div>
+                <strong>MufasirPay</strong>
+                <small>Digital Banking</small>
+              </div>
+            </div>
+
+            <div
+              class="receipt-status"
+              :class="String(selectedTransaction.status || 'pending').toLowerCase()"
+            >
+              {{ selectedTransaction.status || 'Status unavailable' }}
+            </div>
+
             <p class="receipt-label">{{ transactionTitle(selectedTransaction) }}</p>
-            <h2 class="receipt-amount">{{ selectedTransaction.receiver_id === userId ? '+' : '-' }}₦{{ Number(selectedTransaction.amount || 0).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</h2>
+
+            <h2 class="receipt-amount">
+              {{ isIncome(selectedTransaction) ? '+' : '-' }}₦{{
+                Number(selectedTransaction.amount || 0).toLocaleString('en-NG', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })
+              }}
+            </h2>
+
             <div class="receipt-divider"></div>
-            <div class="receipt-row"><span>Date & time</span><strong>{{ formatDate(selectedTransaction.created_at) }}</strong></div>
-            <div class="receipt-row"><span>Description</span><strong>{{ selectedTransaction.description || transactionTitle(selectedTransaction) }}</strong></div>
-            <div class="receipt-row"><span>Transaction type</span><strong>{{ selectedTransaction.type || 'Transaction' }}</strong></div>
-            <div class="receipt-row"><span>Reference</span><strong class="receipt-reference">{{ selectedTransaction.reference || selectedTransaction.id || 'Not available' }}</strong></div>
-            <div class="receipt-row"><span>Transaction ID</span><strong class="receipt-reference">{{ selectedTransaction.id || 'Not available' }}</strong></div>
-            <div class="receipt-row"><span>Direction</span><strong>{{ selectedTransaction.receiver_id === userId ? 'Money in' : 'Money out' }}</strong></div>
+
+            <div class="receipt-row">
+              <span>Date & time</span>
+              <strong>{{ formatDate(selectedTransaction.created_at) }}</strong>
+            </div>
+
+            <div class="receipt-row">
+              <span>Description</span>
+              <strong>
+                {{ selectedTransaction.description || transactionTitle(selectedTransaction) }}
+              </strong>
+            </div>
+
+            <template v-if="selectedTransaction.source === 'bank_transfer'">
+              <div class="receipt-row">
+                <span>Recipient</span>
+                <strong>{{ selectedTransaction.recipient_name || 'Not available' }}</strong>
+              </div>
+
+              <div class="receipt-row">
+                <span>Bank</span>
+                <strong>{{ selectedTransaction.bank_name || 'Not available' }}</strong>
+              </div>
+
+              <div class="receipt-row">
+                <span>Account number</span>
+                <strong>{{ selectedTransaction.account_number || 'Not available' }}</strong>
+              </div>
+
+              <div
+                v-if="selectedTransaction.failure_reason"
+                class="receipt-row"
+              >
+                <span>Failure reason</span>
+                <strong>{{ selectedTransaction.failure_reason }}</strong>
+              </div>
+            </template>
+
+            <div class="receipt-row">
+              <span>Transaction type</span>
+              <strong>{{ transactionTitle(selectedTransaction) }}</strong>
+            </div>
+
+            <div class="receipt-row">
+              <span>Reference</span>
+              <strong class="receipt-reference">
+                {{ selectedTransaction.reference || selectedTransaction.id || 'Not available' }}
+              </strong>
+            </div>
+
+            <div class="receipt-row">
+              <span>Transaction ID</span>
+              <strong class="receipt-reference">
+                {{ selectedTransaction.id || 'Not available' }}
+              </strong>
+            </div>
+
+            <div class="receipt-row">
+              <span>Direction</span>
+              <strong>{{ isIncome(selectedTransaction) ? 'Money in' : 'Money out' }}</strong>
+            </div>
+
             <p class="receipt-footer">Thank you for using MufasirPay.</p>
           </div>
-          <div class="receipt-actions no-print"><button type="button" class="receipt-secondary" @click="closeReceipt">Close</button><button type="button" class="receipt-primary" @click="printReceipt">Print / Save PDF</button></div>
+
+          <div class="receipt-actions no-print">
+            <button type="button" class="receipt-secondary" @click="closeReceipt">
+              Close
+            </button>
+            <button type="button" class="receipt-primary" @click="printReceipt">
+              Print / Save PDF
+            </button>
+          </div>
         </section>
       </div>
     </main>
-
   </div>
-
 </template>
 
+
+
+
 <script setup lang="ts">
-
-import {
-
-  ref,
-
-  computed,
-
-  onMounted
-
-} from 'vue'
-
-import {
-
-  useRouter
-
-} from 'vue-router'
-
-import {
-
-  supabase
-
-} from '../lib/supabase'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { supabase } from '../lib/supabase'
 
 const router = useRouter()
 
-// ----------------------------------
-
 // SIDEBAR
-
-// ----------------------------------
-
-const sidebarOpen =
-
-  ref(false)
+const sidebarOpen = ref(false)
 
 function go(path: string) {
-
   sidebarOpen.value = false
-
   router.push(path)
-
 }
 
 async function logout() {
-
   try {
-
     await supabase.auth.signOut()
-
     router.push('/login')
-
   } catch (error) {
-
-    console.error(
-
-      'Logout error:',
-
-      error
-
-    )
-
+    console.error('Logout error:', error)
   }
-
 }
 
-// ----------------------------------
-
 // STATE
-
-// ----------------------------------
-
-const loading =
-
-  ref(true)
-
-const errorMessage =
-
-  ref('')
-
-const userId =
-
-  ref('')
-
-const transactions =
-
-  ref<any[]>([])
+const loading = ref(true)
+const errorMessage = ref('')
+const userId = ref('')
+const transactions = ref<any[]>([])
 
 const searchQuery = ref('')
-
 const statusFilter = ref('all')
-
 const typeFilter = ref('all')
-
 const startDate = ref('')
-
 const endDate = ref('')
 
-const filteredTransactions = computed(() => {
+// TRANSACTION DIRECTION
+function isIncome(transaction: any) {
+  // An external bank transfer is always money leaving this user's wallet.
+  if (transaction.source === 'bank_transfer') {
+    return false
+  }
 
+  return transaction.receiver_id === userId.value
+}
+
+function isExpense(transaction: any) {
+  if (transaction.source === 'bank_transfer') {
+    return true
+  }
+
+  return transaction.sender_id === userId.value
+}
+
+// FILTERED TRANSACTIONS
+const filteredTransactions = computed(() => {
   const query = searchQuery.value.trim().toLowerCase()
 
   return transactions.value.filter((transaction: any) => {
-
-    const title = String(
-
-      transactionTitle(transaction) || ''
-
-    ).toLowerCase()
-
-    const description = String(
-
-      transaction.description || ''
-
-    ).toLowerCase()
-
+    const title = String(transactionTitle(transaction) || '').toLowerCase()
+    const description = String(transaction.description || '').toLowerCase()
     const reference = String(
-
-      transaction.reference ||
-
-      transaction.id ||
-
-      ''
-
+      transaction.reference || transaction.id || ''
     ).toLowerCase()
-
-    const status = String(
-
-      transaction.status || ''
-
-    ).toLowerCase()
+    const recipient = String(transaction.recipient_name || '').toLowerCase()
+    const bank = String(transaction.bank_name || '').toLowerCase()
+    const account = String(transaction.account_number || '').toLowerCase()
+    const status = String(transaction.status || '').toLowerCase()
 
     const matchesSearch =
-
       !query ||
-
       title.includes(query) ||
-
       description.includes(query) ||
-
-      reference.includes(query)
+      reference.includes(query) ||
+      recipient.includes(query) ||
+      bank.includes(query) ||
+      account.includes(query)
 
     const matchesStatus =
-
       statusFilter.value === 'all' ||
-
       status === statusFilter.value
 
-    const isIncome =
-
-      transaction.receiver_id === userId.value
-
     const matchesType =
-
       typeFilter.value === 'all' ||
-
-      (typeFilter.value === 'income' && isIncome) ||
-
-      (typeFilter.value === 'expense' &&
-
-        transaction.sender_id === userId.value)
+      (typeFilter.value === 'income' && isIncome(transaction)) ||
+      (typeFilter.value === 'expense' && isExpense(transaction))
 
     const transactionDate = transaction.created_at
-
       ? new Date(transaction.created_at)
-
       : null
 
     const matchesStart =
-
       !startDate.value ||
-
-      (transactionDate !== null &&
-
-        transactionDate >= new Date(`${startDate.value}T00:00:00`))
+      (
+        transactionDate !== null &&
+        transactionDate >= new Date(`${startDate.value}T00:00:00`)
+      )
 
     const matchesEnd =
-
       !endDate.value ||
-
-      (transactionDate !== null &&
-
-        transactionDate <= new Date(`${endDate.value}T23:59:59.999`))
+      (
+        transactionDate !== null &&
+        transactionDate <= new Date(`${endDate.value}T23:59:59.999`)
+      )
 
     return (
-
       matchesSearch &&
-
       matchesStatus &&
-
       matchesType &&
-
       matchesStart &&
-
       matchesEnd
-
     )
-
   })
-
 })
 
+// RECEIPT
 const selectedTransaction = ref<any | null>(null)
 
 function openReceipt(transaction: any) {
@@ -766,411 +457,284 @@ function printReceipt() {
   window.print()
 }
 
+// MONTHLY GROUPS
 const groupedTransactions = computed(() => {
-  const groups = new Map<string, { key: string; label: string; items: any[] }>()
+  const groups = new Map<
+    string,
+    { key: string; label: string; items: any[] }
+  >()
+
   for (const transaction of filteredTransactions.value) {
-    const date = transaction.created_at ? new Date(transaction.created_at) : null
+    const date = transaction.created_at
+      ? new Date(transaction.created_at)
+      : null
+
     const validDate = date && !Number.isNaN(date.getTime())
-    const key = validDate ? `${date!.getFullYear()}-${String(date!.getMonth() + 1).padStart(2, '0')}` : 'unknown-date'
-    const label = validDate ? date!.toLocaleDateString('en-NG', { month: 'long', year: 'numeric' }) : 'Date unavailable'
-    if (!groups.has(key)) groups.set(key, { key, label, items: [] })
+
+    const key = validDate
+      ? `${date!.getFullYear()}-${String(date!.getMonth() + 1).padStart(2, '0')}`
+      : 'unknown-date'
+
+    const label = validDate
+      ? date!.toLocaleDateString('en-NG', {
+          month: 'long',
+          year: 'numeric'
+        })
+      : 'Date unavailable'
+
+    if (!groups.has(key)) {
+      groups.set(key, { key, label, items: [] })
+    }
+
     groups.get(key)!.items.push(transaction)
   }
-  return Array.from(groups.values()).sort((a, b) => a.key === 'unknown-date' ? 1 : b.key === 'unknown-date' ? -1 : b.key.localeCompare(a.key))
+
+  return Array.from(groups.values()).sort((a, b) =>
+    a.key === 'unknown-date'
+      ? 1
+      : b.key === 'unknown-date'
+        ? -1
+        : b.key.localeCompare(a.key)
+  )
 })
 
+// CLEAR FILTERS
 function clearFilters() {
-
   searchQuery.value = ''
-
   statusFilter.value = 'all'
-
   typeFilter.value = 'all'
-
   startDate.value = ''
-
   endDate.value = ''
-
 }
 
+// EXPORT CSV
 function exportCSV() {
-
   const headers = [
-
     'Date',
-
     'Description',
-
     'Type',
-
     'Amount (NGN)',
-
     'Status',
-
-    'Reference'
-
+    'Reference',
+    'Recipient',
+    'Bank',
+    'Account Number'
   ]
 
-  const rows = filteredTransactions.value.map(
-
-    (transaction: any) => [
-
-      transaction.created_at || '',
-
-      transactionTitle(transaction),
-
-      transaction.receiver_id === userId.value
-
-        ? 'Money In'
-
-        : 'Money Out',
-
-      Number(transaction.amount || 0).toFixed(2),
-
-      transaction.status || '',
-
-      transaction.reference || transaction.id || ''
-
-    ]
-
-  )
+  const rows = filteredTransactions.value.map((transaction: any) => [
+    transaction.created_at || '',
+    transactionTitle(transaction),
+    isIncome(transaction) ? 'Money In' : 'Money Out',
+    Number(transaction.amount || 0).toFixed(2),
+    transaction.status || '',
+    transaction.reference || transaction.id || '',
+    transaction.recipient_name || '',
+    transaction.bank_name || '',
+    transaction.account_number || ''
+  ])
 
   const escapeCSV = (value: unknown) =>
-
     `"${String(value ?? '').replace(/"/g, '""')}"`
 
   const csv = [
-
     headers.map(escapeCSV).join(','),
-
     ...rows.map(row => row.map(escapeCSV).join(','))
-
   ].join('\r\n')
 
   const blob = new Blob(
-
     ['\uFEFF' + csv],
-
     { type: 'text/csv;charset=utf-8;' }
-
   )
 
   const url = URL.createObjectURL(blob)
-
   const link = document.createElement('a')
 
   link.href = url
-
   link.download = 'mufasirpay-transactions.csv'
-
   link.click()
 
   URL.revokeObjectURL(url)
-
 }
 
-// ----------------------------------
+// TOTAL MONEY IN
+const totalIncome = computed(() => {
+  let total = 0
 
-// TOTAL INCOME
-
-// ----------------------------------
-
-const totalIncome =
-
-  computed(() => {
-
-    let total = 0
-
-    transactions.value.forEach(
-
-      (transaction) => {
-
-        if (
-
-          transaction.receiver_id ===
-
-          userId.value
-
-        ) {
-
-          total +=
-
-            Number(
-
-              transaction.amount
-
-            )
-
-        }
-
-      }
-
-    )
-
-    return total.toLocaleString(
-
-      'en-NG',
-
-      {
-
-        minimumFractionDigits: 2,
-
-        maximumFractionDigits: 2
-
-      }
-
-    )
-
+  transactions.value.forEach((transaction: any) => {
+    if (isIncome(transaction)) {
+      total += Number(transaction.amount || 0)
+    }
   })
 
-// ----------------------------------
-
-// TOTAL EXPENSES
-
-// ----------------------------------
-
-const totalExpenses =
-
-  computed(() => {
-
-    let total = 0
-
-    transactions.value.forEach(
-
-      (transaction) => {
-
-        if (
-
-          transaction.sender_id ===
-
-          userId.value
-
-        ) {
-
-          total +=
-
-            Number(
-
-              transaction.amount
-
-            )
-
-        }
-
-      }
-
-    )
-
-    return total.toLocaleString(
-
-      'en-NG',
-
-      {
-
-        minimumFractionDigits: 2,
-
-        maximumFractionDigits: 2
-
-      }
-
-    )
-
+  return total.toLocaleString('en-NG', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   })
-
-// ----------------------------------
-
-// LOAD TRANSACTIONS
-
-// ----------------------------------
-
-const loadTransactions =
-
-  async () => {
-
-    loading.value = true
-
-    errorMessage.value = ''
-
-    try {
-
-      const {
-
-        data: {
-
-          user
-
-        }
-
-      } =
-
-        await supabase.auth.getUser()
-
-      if (!user) {
-
-        router.push('/login')
-
-        return
-
-      }
-
-      userId.value =
-
-        user.id
-
-      const {
-
-        data,
-
-        error
-
-      } =
-
-        await supabase
-
-          .from('transactions')
-
-          .select('*')
-
-          .or(
-
-            `sender_id.eq.${user.id},receiver_id.eq.${user.id}`
-
-          )
-
-          .order(
-
-            'created_at',
-
-            {
-
-              ascending: false
-
-            }
-
-          )
-
-      if (error) {
-
-        throw error
-
-      }
-
-      transactions.value =
-
-        data || []
-
-    } catch (error: any) {
-
-      console.error(
-
-        'Transactions error:',
-
-        error
-
-      )
-
-      errorMessage.value =
-
-        error?.message ||
-
-        'Unable to load transactions.'
-
-    } finally {
-
-      loading.value = false
-
-    }
-
-  }
-
-// ----------------------------------
-
-// TRANSACTION TITLE
-
-// ----------------------------------
-
-const transactionTitle =
-
-  (transaction: any) => {
-
-    if (
-
-      transaction.type ===
-
-      'fund_wallet'
-
-    ) {
-
-      return 'Wallet Funding'
-
-    }
-
-    if (
-
-      transaction.type ===
-
-      'transfer'
-
-    ) {
-
-      return transaction.receiver_id ===
-
-        userId.value
-
-        ? 'Money Received'
-
-        : 'Money Sent'
-
-    }
-
-    return transaction.type ||
-
-      'Transaction'
-
-  }
-
-// ----------------------------------
-
-// FORMAT DATE
-
-// ----------------------------------
-
-const formatDate =
-
-  (date: string) => {
-
-    return new Date(
-
-      date
-
-    ).toLocaleString(
-
-      'en-NG',
-
-      {
-
-        dateStyle: 'medium',
-
-        timeStyle: 'short'
-
-      }
-
-    )
-
-  }
-
-// ----------------------------------
-
-// START
-
-// ----------------------------------
-
-onMounted(() => {
-
-  loadTransactions()
-
 })
 
+// TOTAL MONEY OUT
+const totalExpenses = computed(() => {
+  let total = 0
+
+  transactions.value.forEach((transaction: any) => {
+    if (transaction.source === 'bank_transfer') {
+      // Count an external payout only when the wallet was debited
+      // and the debit has not subsequently been refunded.
+      if (
+        transaction.wallet_debited_at &&
+        !transaction.refunded_at
+      ) {
+        total += Number(transaction.amount || 0)
+      }
+
+      return
+    }
+
+    if (isExpense(transaction)) {
+      total += Number(transaction.amount || 0)
+    }
+  })
+
+  return total.toLocaleString('en-NG', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })
+})
+
+// LOAD INTERNAL + EXTERNAL BANK TRANSFERS
+const loadTransactions = async () => {
+  loading.value = true
+  errorMessage.value = ''
+
+  try {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      router.push('/login')
+      return
+    }
+
+    userId.value = user.id
+
+    const [
+      { data: internalData, error: internalError },
+      { data: bankTransferData, error: bankTransferError }
+    ] = await Promise.all([
+      supabase
+        .from('transactions')
+        .select('*')
+        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .order('created_at', { ascending: false }),
+
+      supabase
+        .from('bank_transfers')
+        .select(`
+          id,
+          reference,
+          recipient_name,
+          bank_name,
+          account_number,
+          amount,
+          status,
+          failure_reason,
+          created_at,
+          updated_at,
+          wallet_debited_at,
+          refunded_at
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+    ])
+
+    if (internalError) {
+      throw internalError
+    }
+
+    if (bankTransferError) {
+      throw bankTransferError
+    }
+
+    const internalTransactions = (internalData || []).map(
+      (transaction: any) => ({
+        ...transaction,
+        source: 'internal'
+      })
+    )
+
+    const externalTransfers = (bankTransferData || []).map(
+      (transfer: any) => ({
+        ...transfer,
+        source: 'bank_transfer',
+        type: 'bank_transfer',
+        description: `Bank transfer to ${transfer.recipient_name || 'recipient'}`,
+        sender_id: user.id,
+        receiver_id: null
+      })
+    )
+
+    transactions.value = [
+      ...internalTransactions,
+      ...externalTransfers
+    ].sort((a: any, b: any) => {
+      return (
+        new Date(b.created_at).getTime() -
+        new Date(a.created_at).getTime()
+      )
+    })
+  } catch (error: any) {
+    console.error('Transactions error:', error)
+
+    errorMessage.value =
+      error?.message || 'Unable to load transactions.'
+  } finally {
+    loading.value = false
+  }
+}
+
+// TRANSACTION TITLE
+const transactionTitle = (transaction: any) => {
+  if (
+    transaction.source === 'bank_transfer' ||
+    transaction.type === 'bank_transfer'
+  ) {
+    return 'Bank Transfer'
+  }
+
+  if (transaction.type === 'fund_wallet') {
+    return 'Wallet Funding'
+  }
+
+  if (transaction.type === 'transfer') {
+    return transaction.receiver_id === userId.value
+      ? 'Money Received'
+      : 'Money Sent'
+  }
+
+  return transaction.type || 'Transaction'
+}
+
+// FORMAT DATE
+const formatDate = (date: string) => {
+  if (!date) return 'Date unavailable'
+
+  const parsedDate = new Date(date)
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return 'Date unavailable'
+  }
+
+  return parsedDate.toLocaleString('en-NG', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  })
+}
+
+// START
+onMounted(() => {
+  loadTransactions()
+})
 </script>
 
 <style scoped>
@@ -2314,6 +1878,14 @@ onMounted(() => {
     #c45244;
 
 }
+
+
+.status.processing,
+.receipt-status.processing {
+  background: #eaf2ff;
+  color: #3267a8;
+}
+
 
 /* =================================
 

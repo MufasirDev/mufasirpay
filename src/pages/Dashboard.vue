@@ -73,6 +73,16 @@
         </button>
 
         <button
+            type="button"
+            class="nav-item"
+             :class="{ active: $route.path === '/bank-transfer' }"
+             @click="goTo('/bank-transfer')"
+                     >
+              <span class="nav-icon">🏦</span>
+             <span>Bank Transfer</span>
+              </button>
+
+        <button
 
           type="button"
 
@@ -81,6 +91,7 @@
           @click="goTo('/airtime')"
 
         >
+        
 
           <span class="nav-icon">◫</span>
 
@@ -818,17 +829,19 @@
 
                 <div>
 
-                  <h4>
+                <h4>
+  {{
+    transaction.description ||
+    transaction.type
+  }}
+</h4>
 
-                    {{
-
-                      transaction.description ||
-
-                      transaction.type
-
-                    }}
-
-                  </h4>
+<small
+  v-if="transaction.source === 'bank_transfer'"
+  class="bank-transfer-label"
+>
+  External bank transfer · {{ transaction.bank_name }}
+</small>
 
                   <p>
 
@@ -917,553 +930,277 @@
       </nav>
     </main>
 
+
+
+
   </div>
 
 </template>
 
 <script setup lang="ts">
-
 import {
-
   ref,
-
   computed,
-
   onMounted
-
 } from 'vue'
 
-import {
-
-  supabase
-
-} from '../lib/supabase'
+import { supabase } from '../lib/supabase'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const loading =
-
-  ref(true)
-
-const fullName =
-
-  ref('')
-
-const accountNumber =
-
-  ref('')
-
-const balance =
-
-  ref(0)
-
+const loading = ref(true)
+const fullName = ref('')
+const accountNumber = ref('')
+const balance = ref(0)
 const showBalance = ref(true)
 
-const toggleBalance = () => {
+const totalIncome = ref('0.00')
+const totalExpenses = ref('0.00')
+const transactionCount = ref(0)
 
-  showBalance.value = !showBalance.value
+const transactions = ref<any[]>([])
+const bankTransfers = ref<any[]>([])
 
-}
-
-const totalIncome =
-
-  ref('0.00')
-
-const totalExpenses =
-
-  ref('0.00')
-
-const transactionCount =
-
-  ref(0)
-
-const transactions =
-
-  ref<any[]>([])
-
-/* =========================
-
-   NAVIGATION
-
-\\\\\\\\\\\\\\\\========================= */
-
+/* NAVIGATION */
 const goTo = (path: string) => {
   void router.push(path)
 }
 
-/* =========================
-
-   WALLET
-
-\\\\\\\\\\\\\\\\========================= */
-
+/* WALLET */
 const openWallet = () => {
   void router.push('/wallet')
 }
 
-/* =========================
+/* FIRST NAME */
+const firstName = computed(() => {
+  return (
+    fullName.value.trim().split(/\s+/)[0] || 'User'
+  )
+})
 
-   FIRST NAME
+/* INITIALS */
+const initials = computed(() => {
+  const names = fullName.value
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
 
-\\\\\\\\\\\\\\\\========================= */
-
-const firstName =
-
-  computed(() => {
-
+  if (names.length >= 2) {
     return (
-
-      fullName.value
-
-        .trim()
-
-        .split(/\s+/)[0]
-
-      || 'User'
-
-    )
-
-  })
-
-/* =========================
-
-   INITIALS
-
-\\\\\\\\\\\\\\\\========================= */
-
-const initials =
-
-  computed(() => {
-
-    const names =
-
-      fullName.value
-
-        .trim()
-
-        .split(/\s+/)
-
-        .filter(Boolean)
-
-    if (
-
-      names.length >= 2
-
-    ) {
-
-      return (
-
-        names[0][0] +
-
-        names[
-
-          names.length - 1
-
-        ][0]
-
-      ).toUpperCase()
-
-    }
-
-    return (
-
-      names[0]?.[0]
-
-        ?.toUpperCase()
-
-      || 'U'
-
-    )
-
-  })
-
-/* =========================
-
-   BALANCE
-
-\\\\\\\\\\\\\\\\========================= */
-
-const formattedBalance =
-
-  computed(() => {
-
-    return balance.value.toLocaleString(
-
-      'en-NG',
-
-      {
-
-        minimumFractionDigits:
-
-          2,
-
-        maximumFractionDigits:
-
-          2
-
-      }
-
-    )
-
-  })
-
-/* =========================
-
-   LOAD DASHBOARD
-
-\\\\\\\\\\\\\\\\========================= */
-
-const loadDashboard =
-
-  async () => {
-
-    loading.value = true
-
-    try {
-
-      /* USER */
-
-      const {
-
-        data: {
-
-          user
-
-        }
-
-      } =
-
-        await supabase.auth.getUser()
-
-      if (!user) {
-        await router.replace('/login')
-        return
-      }
-
-      /* PROFILE */
-
-      const {
-
-        data: profile,
-
-        error: profileError
-
-      } =
-
-        await supabase
-
-          .from('profiles')
-
-          .select(
-
-            'full_name, account_number'
-
-          )
-
-          .eq(
-
-            'id',
-
-            user.id
-
-          )
-
-          .single()
-
-      if (profileError) {
-
-        console.error(
-
-          'Profile error:',
-
-          profileError
-
-        )
-
-      }
-
-      fullName.value =
-
-        profile?.full_name ||
-
-        user.user_metadata?.full_name ||
-
-        'MufasirPay User'
-
-      accountNumber.value =
-
-        profile?.account_number ||
-
-        'Not assigned'
-
-      /* WALLET */
-
-      const {
-
-        data: wallet,
-
-        error: walletError
-
-      } =
-
-        await supabase
-
-          .from('wallets')
-
-          .select('balance')
-
-          .eq(
-
-            'user_id',
-
-            user.id
-
-          )
-
-          .single()
-
-      if (walletError) {
-
-        console.error(
-
-          'Wallet error:',
-
-          walletError
-
-        )
-
-      }
-
-      balance.value =
-
-        Number(
-
-          wallet?.balance || 0
-
-        )
-
-      /* TRANSACTIONS */
-
-      const {
-
-        data: transactionData,
-
-        error: transactionError
-
-      } =
-
-        await supabase
-
-          .from('transactions')
-
-          .select('*')
-
-          .or(
-
-            `sender_id.eq.${user.id},receiver_id.eq.${user.id}`
-
-          )
-
-          .order(
-
-            'created_at',
-
-            {
-
-              ascending:
-
-                false
-
-            }
-
-          )
-
-      if (transactionError) {
-
-        console.error(
-
-          'Transaction error:',
-
-          transactionError
-
-        )
-
-      }
-
-      transactions.value =
-
-        transactionData || []
-
-      transactionCount.value =
-
-        transactions.value.length
-
-      /* INCOME / EXPENSES */
-
-      let income = 0
-
-      let expenses = 0
-
-      transactions.value.forEach(
-
-        (transaction) => {
-
-          const amount =
-
-            Number(
-
-              transaction.amount
-
-            )
-
-          if (
-
-            transaction.receiver_id ===
-
-            user.id
-
-          ) {
-
-            income += amount
-
-          }
-
-          if (
-
-            transaction.sender_id ===
-
-            user.id
-
-          ) {
-
-            expenses += amount
-
-          }
-
-        }
-
-      )
-
-      totalIncome.value =
-
-        income.toLocaleString(
-
-          'en-NG',
-
-          {
-
-            minimumFractionDigits:
-
-              2,
-
-            maximumFractionDigits:
-
-              2
-
-          }
-
-        )
-
-      totalExpenses.value =
-
-        expenses.toLocaleString(
-
-          'en-NG',
-
-          {
-
-            minimumFractionDigits:
-
-              2,
-
-            maximumFractionDigits:
-
-              2
-
-          }
-
-        )
-
-    } catch (error) {
-
-      console.error(
-
-        'Dashboard error:',
-
-        error
-
-      )
-
-    } finally {
-
-      loading.value = false
-
-    }
-
+      names[0][0] + names[names.length - 1][0]
+    ).toUpperCase()
   }
 
-/* =========================
+  return names[0]?.[0]?.toUpperCase() || 'U'
+})
 
-   LOGOUT
+/* BALANCE */
+const formattedBalance = computed(() => {
+  return balance.value.toLocaleString('en-NG', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })
+})
 
-\\\\\\\\\\\\\\\\========================= */
+const toggleBalance = () => {
+  showBalance.value = !showBalance.value
+}
 
+/* LOAD DASHBOARD */
+const loadDashboard = async () => {
+  loading.value = true
+
+  try {
+    /* USER */
+    const {
+      data: { user },
+      error: authError
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      await router.replace('/login')
+      return
+    }
+
+    /* PROFILE */
+    const {
+      data: profile,
+      error: profileError
+    } = await supabase
+      .from('profiles')
+      .select('full_name, account_number')
+      .eq('id', user.id)
+      .single()
+
+    if (profileError) {
+      console.error('Profile error:', profileError)
+    }
+
+    fullName.value =
+      profile?.full_name ||
+      user.user_metadata?.full_name ||
+      'MufasirPay User'
+
+    accountNumber.value =
+      profile?.account_number || 'Not assigned'
+
+    /* WALLET */
+    const {
+      data: wallet,
+      error: walletError
+    } = await supabase
+      .from('wallets')
+      .select('balance')
+      .eq('user_id', user.id)
+      .single()
+
+    if (walletError) {
+      console.error('Wallet error:', walletError)
+    }
+
+    balance.value = Number(wallet?.balance || 0)
+
+    /* INTERNAL TRANSACTIONS */
+    const {
+      data: transactionData,
+      error: transactionError
+    } = await supabase
+      .from('transactions')
+      .select('*')
+      .or(
+        `sender_id.eq.${user.id},receiver_id.eq.${user.id}`
+      )
+      .order('created_at', { ascending: false })
+
+    if (transactionError) {
+      console.error('Transaction error:', transactionError)
+    }
+
+    /* EXTERNAL BANK TRANSFERS */
+    const {
+      data: bankTransferData,
+      error: bankTransferError
+    } = await supabase
+      .from('bank_transfers')
+      .select(`
+        id,
+        reference,
+        recipient_name,
+        bank_name,
+        account_number,
+        amount,
+        status,
+        created_at
+      `)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (bankTransferError) {
+      console.error(
+        'Bank transfer error:',
+        bankTransferError
+      )
+    }
+
+    bankTransfers.value = bankTransferData || []
+
+    /* FORMAT INTERNAL TRANSACTIONS */
+    const internalTransactions = (transactionData || []).map(
+      (transaction: any) => ({
+        ...transaction,
+        source: 'internal',
+        description:
+          transaction.description || transaction.type
+      })
+    )
+
+    /* FORMAT EXTERNAL BANK TRANSFERS */
+    const externalTransfers = bankTransfers.value.map(
+      (transfer: any) => ({
+        ...transfer,
+        source: 'bank_transfer',
+        type: 'bank_transfer',
+        description: `Bank transfer to ${transfer.recipient_name}`
+      })
+    )
+
+    /* COMBINE AND SORT TRANSACTIONS */
+    transactions.value = [
+      ...internalTransactions,
+      ...externalTransfers
+    ].sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() -
+        new Date(a.created_at).getTime()
+    )
+
+    transactionCount.value = transactions.value.length
+
+    /* INCOME AND EXPENSES */
+    let income = 0
+    let expenses = 0
+
+    internalTransactions.forEach((transaction: any) => {
+      const amount = Number(transaction.amount || 0)
+
+      if (transaction.receiver_id === user.id) {
+        income += amount
+      }
+
+      if (transaction.sender_id === user.id) {
+        expenses += amount
+      }
+    })
+
+    /* COUNT SUCCESSFUL EXTERNAL TRANSFERS AS EXPENSES */
+    bankTransfers.value.forEach((transfer: any) => {
+      if (transfer.status === 'successful') {
+        expenses += Number(transfer.amount || 0)
+      }
+    })
+
+    totalIncome.value = income.toLocaleString('en-NG', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+
+    totalExpenses.value = expenses.toLocaleString('en-NG', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+
+  } catch (error) {
+    console.error('Dashboard error:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+/* LOGOUT */
 const logout = async () => {
   const { error } = await supabase.auth.signOut()
+
   if (error) {
     console.error('Logout error:', error)
     return
   }
+
   await router.replace('/')
 }
 
-/* =========================
+/* DATE */
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleString('en-NG', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  })
+}
 
-   DATE
-
-\\\\\\\\\\\\\\\\========================= */
-
-const formatDate =
-
-  (date: string) => {
-
-    return new Date(
-
-      date
-
-    ).toLocaleString(
-
-      'en-NG',
-
-      {
-
-        dateStyle:
-
-          'medium',
-
-        timeStyle:
-
-          'short'
-
-      }
-
-    )
-
-  }
-
-/* =========================
-
-   START
-
-\\\\\\\\\\\\\\\\========================= */
-
+/* START */
 onMounted(() => {
-
   loadDashboard()
-
 })
-
 </script>
 
 <style scoped>
@@ -4229,6 +3966,17 @@ onMounted(() => {
   .transaction-right {
     margin-left: 5px;
   }
+
+  .bank-transfer-label {
+  display: block;
+  margin-top: 4px;
+  color: #098354;
+  font-size: 10px;
+}
+
+.transaction-status.processing {
+  color: #3879c9;
+}
 }
 
 </style>

@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Supabase temporary files
+supabase/.temp/
+supabase/.branches/
+
+# Environment secrets
+.env
+.env.*
+!.env.example

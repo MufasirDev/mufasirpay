@@ -372,28 +372,20 @@
 
 </template>
 
+
 <script setup lang="ts">
-
 import {
-
   ref,
-
   computed,
-
   onMounted
-
 } from 'vue'
 
 import {
-
   useRouter
-
 } from 'vue-router'
 
 import {
-
   supabase
-
 } from '../lib/supabase'
 
 const router = useRouter()
@@ -401,417 +393,332 @@ const router = useRouter()
 const sidebarOpen = ref(false)
 
 function go(path: string) {
-
   sidebarOpen.value = false
-
   router.push(path)
-
 }
 
 async function logout() {
-
   try {
-
     await supabase.auth.signOut()
-
     router.push('/login')
-
   } catch (error) {
-
-    console.error(
-
-      'Logout error:',
-
-      error
-
-    )
-
+    console.error('Logout error:', error)
   }
-
 }
 
-const loading =
-
-  ref(false)
-
-const receiverAccountNumber =
-
-  ref('')
-
+const loading = ref(false)
+const receiverAccountNumber = ref('')
 const transactionPin = ref('')
+const amountInput = ref('')
+const balance = ref(0)
+const errorMessage = ref('')
+const successMessage = ref('')
 
-const amountInput =
-
-  ref('')
-
-const balance =
-
-  ref(0)
-
-const errorMessage =
-
-  ref('')
-
-const successMessage =
-
-  ref('')
-
-const formattedBalance =
-
-  computed(() => {
-
-    return balance.value.toLocaleString(
-
-      'en-NG',
-
-      {
-
-        minimumFractionDigits: 2,
-
-        maximumFractionDigits: 2
-
-      }
-
-    )
-
+const formattedBalance = computed(() => {
+  return balance.value.toLocaleString('en-NG', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   })
-
-const cleanAccountNumber = () => {
-
-  receiverAccountNumber.value =
-
-    receiverAccountNumber.value
-
-      .replace(/\D/g, '')
-
-      .slice(0, 10)
-
-}
-
-const getFunctionErrorMessage =
-
-  async (error: any) => {
-
-    if (
-
-      error?.context &&
-
-      typeof error.context.json === 'function'
-
-    ) {
-
-      try {
-
-        const responseBody =
-
-          await error.context.json()
-
-        if (
-
-          responseBody?.error
-
-        ) {
-
-          return responseBody.error
-
-        }
-
-        if (
-
-          responseBody?.message
-
-        ) {
-
-          return responseBody.message
-
-        }
-
-      } catch {
-
-        // Ignore JSON parsing failure
-
-      }
-
-    }
-
-    return (
-
-      error?.message ||
-
-      'Unable to complete transfer.'
-
-    )
-
-  }
-
-const loadWallet =
-
-  async () => {
-
-    try {
-
-      const {
-
-        data: {
-
-          user
-
-        }
-
-      } =
-
-        await supabase.auth.getUser()
-
-      if (!user) {
-
-        router.push('/login')
-
-        return
-
-      }
-
-      const {
-
-        data: wallet,
-
-        error
-
-      } =
-
-        await supabase
-
-          .from('wallets')
-
-          .select('balance')
-
-          .eq(
-
-            'user_id',
-
-            user.id
-
-          )
-
-          .single()
-
-      if (error) {
-
-        console.error(
-
-          'Wallet loading error:',
-
-          error
-
-        )
-
-        return
-
-      }
-
-      balance.value =
-
-        Number(
-
-          wallet?.balance || 0
-
-        )
-
-    } catch (error) {
-
-      console.error(
-
-        'Wallet error:',
-
-        error
-
-      )
-
-    }
-
-  }
-
-const transferMoney =
-
-  async () => {
-
-    errorMessage.value = ''
-
-    successMessage.value = ''
-
-    const account =
-
-      receiverAccountNumber.value.trim()
-
-    const amount =
-
-      Number(amountInput.value)
-
-    if (!/^\d{6}$/.test(transactionPin.value)) {
-      errorMessage.value = 'Enter your 6-digit transaction PIN.'
-      return
-    }
-
-    if (account.length !== 10) {
-
-      errorMessage.value =
-
-        'Please enter a valid 10-digit MufasirPay account number.'
-
-      return
-
-    }
-
-    if (
-
-      !Number.isFinite(amount) ||
-
-      amount < 100
-
-    ) {
-
-      errorMessage.value =
-
-        'Please enter an amount of at least ₦100.'
-
-      return
-
-    }
-
-    if (amount > balance.value) {
-
-      errorMessage.value =
-
-        'Insufficient wallet balance.'
-
-      return
-
-    }
-
-    loading.value = true
-
-    try {
-
-      const {
-
-        data,
-
-        error
-
-      } =
-
-        await supabase.functions.invoke(
-
-          'transfer-money',
-
-          {
-
-            body: {
-
-              receiverAccountNumber:
-
-                account,
-
-              amount,
-              pin: transactionPin.value
-            }
-
-          }
-
-        )
-
-      if (error) {
-
-        const realMessage =
-
-          await getFunctionErrorMessage(
-
-            error
-
-          )
-
-        throw new Error(
-
-          realMessage
-
-        )
-
-      }
-
-      if (!data) {
-
-        throw new Error(
-
-          'No response was received from the transfer service.'
-
-        )
-
-      }
-
-      if (!data.success) {
-
-        throw new Error(
-
-          data.error ||
-
-          'Transfer failed.'
-
-        )
-
-      }
-
-      await loadWallet()
-
-      successMessage.value =
-
-        `Transfer successful. ₦${amount.toLocaleString(
-
-          'en-NG',
-
-          {
-
-            minimumFractionDigits: 2,
-
-            maximumFractionDigits: 2
-
-          }
-
-        )} sent successfully.`
-
-      receiverAccountNumber.value = ''
-
-      amountInput.value = ''
-      transactionPin.value = ''
-
-    } catch (error: any) {
-
-      console.error(
-
-        'Transfer error:',
-
-        error
-
-      )
-
-      errorMessage.value =
-
-        error?.message ||
-
-        'Unable to complete transfer.'
-
-    } finally {
-
-      loading.value = false
-
-    }
-
-  }
-
-onMounted(() => {
-
-  loadWallet()
-
 })
 
+const cleanAccountNumber = () => {
+  receiverAccountNumber.value =
+    receiverAccountNumber.value
+      .replace(/\D/g, '')
+      .slice(0, 10)
+}
+
+// ------------------------------------
+// IDEMPOTENCY KEY MANAGEMENT
+// ------------------------------------
+
+const IDEMPOTENCY_STORAGE_KEY =
+  'mufasirpay_active_transfer'
+
+function getTransferIdempotencyKey(
+  fingerprint: string
+): string {
+  try {
+    const stored = sessionStorage.getItem(
+      IDEMPOTENCY_STORAGE_KEY
+    )
+
+    if (stored) {
+      const parsed = JSON.parse(stored)
+
+      if (
+        parsed?.fingerprint === fingerprint &&
+        typeof parsed?.key === 'string'
+      ) {
+        return parsed.key
+      }
+    }
+
+    const key = crypto.randomUUID()
+
+    sessionStorage.setItem(
+      IDEMPOTENCY_STORAGE_KEY,
+      JSON.stringify({
+        fingerprint,
+        key
+      })
+    )
+
+    return key
+  } catch (error) {
+    console.error(
+      'Idempotency key error:',
+      error
+    )
+
+    throw new Error(
+      'Unable to prepare your transfer securely. Please try again.'
+    )
+  }
+}
+
+function clearTransferIdempotencyKey() {
+  try {
+    sessionStorage.removeItem(
+      IDEMPOTENCY_STORAGE_KEY
+    )
+  } catch (error) {
+    console.error(
+      'Unable to clear transfer key:',
+      error
+    )
+  }
+}
+
+// ------------------------------------
+// ERROR HANDLING
+// ------------------------------------
+
+const getFunctionErrorMessage = async (
+  error: any
+) => {
+  if (
+    error?.context &&
+    typeof error.context.json === 'function'
+  ) {
+    try {
+      const responseBody =
+        await error.context.json()
+
+      if (responseBody?.error) {
+        return responseBody.error
+      }
+
+      if (responseBody?.message) {
+        return responseBody.message
+      }
+    } catch {
+      // Ignore JSON parsing failure
+    }
+  }
+
+  return (
+    error?.message ||
+    'Unable to complete transfer.'
+  )
+}
+
+// ------------------------------------
+// LOAD WALLET
+// ------------------------------------
+
+const loadWallet = async () => {
+  try {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      router.push('/login')
+      return
+    }
+
+    const {
+      data: wallet,
+      error
+    } = await supabase
+      .from('wallets')
+      .select('balance')
+      .eq('user_id', user.id)
+      .single()
+
+    if (error) {
+      console.error(
+        'Wallet loading error:',
+        error
+      )
+      return
+    }
+
+    balance.value = Number(
+      wallet?.balance || 0
+    )
+  } catch (error) {
+    console.error(
+      'Wallet error:',
+      error
+    )
+  }
+}
+
+// ------------------------------------
+// INTERNAL WALLET TRANSFER
+// ------------------------------------
+
+const transferMoney = async () => {
+  if (loading.value) return
+
+  errorMessage.value = ''
+  successMessage.value = ''
+
+  const account =
+    receiverAccountNumber.value.trim()
+
+  const amount =
+    Number(amountInput.value)
+
+  const pin = transactionPin.value
+
+  // Validate PIN
+  if (!/^\d{6}$/.test(pin)) {
+    errorMessage.value =
+      'Enter your 6-digit transaction PIN.'
+    return
+  }
+
+  // Validate recipient account
+  if (!/^\d{10}$/.test(account)) {
+    errorMessage.value =
+      'Please enter a valid 10-digit MufasirPay account number.'
+    return
+  }
+
+  // Validate amount
+  if (
+    !Number.isFinite(amount) ||
+    amount < 100
+  ) {
+    errorMessage.value =
+      'Please enter an amount of at least ₦100.'
+    return
+  }
+
+  if (
+    !Number.isSafeInteger(
+      Math.round(amount * 100)
+    )
+  ) {
+    errorMessage.value =
+      'Enter a valid transfer amount.'
+    return
+  }
+
+  if (amount > balance.value) {
+    errorMessage.value =
+      'Insufficient wallet balance.'
+    return
+  }
+
+  loading.value = true
+
+  try {
+    const {
+      data: { user },
+      error: authError
+    } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      throw new Error(
+        'Your session has expired. Please log in again.'
+      )
+    }
+
+    // Same sender, recipient and amount = same retry key.
+    const fingerprint =
+      `${user.id}:${account}:${amount.toFixed(2)}`
+
+    const idempotencyKey =
+      getTransferIdempotencyKey(fingerprint)
+
+    const {
+      data,
+      error
+    } = await supabase.functions.invoke(
+      'transfer-money',
+      {
+        body: {
+          receiverAccountNumber: account,
+          amount,
+          pin,
+          idempotencyKey
+        }
+      }
+    )
+
+    if (error) {
+      const realMessage =
+        await getFunctionErrorMessage(error)
+
+      throw new Error(realMessage)
+    }
+
+    if (!data) {
+      throw new Error(
+        'No response was received from the transfer service.'
+      )
+    }
+
+    if (!data.success) {
+      throw new Error(
+        data.error || 'Transfer failed.'
+      )
+    }
+
+    // Only clear the key after confirmed success.
+    clearTransferIdempotencyKey()
+
+    await loadWallet()
+
+    successMessage.value =
+      `Transfer successful. ₦${amount.toLocaleString(
+        'en-NG',
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      )} sent successfully.`
+
+    receiverAccountNumber.value = ''
+    amountInput.value = ''
+    transactionPin.value = ''
+
+  } catch (error: any) {
+    console.error(
+      'Transfer error:',
+      error
+    )
+
+    errorMessage.value =
+      error?.message ||
+      'Unable to complete transfer.'
+
+  } finally {
+    loading.value = false
+  }
+}
+
+// ------------------------------------
+// PAGE INITIALIZATION
+// ------------------------------------
+
+onMounted(() => {
+  loadWallet()
+})
 </script>
 
 <style scoped>
