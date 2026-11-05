@@ -477,7 +477,7 @@
 
           <div class="actions-grid">
 
-            <!-- TRANSFER -->
+            <!-- BANK TRANSFER -->
 
             <button
 
@@ -485,13 +485,13 @@
 
               class="action-card"
 
-              @click="goTo('/transfer')"
+               @click="goTo('/bank-transfer')"
 
             >
 
               <div class="action-icon">
 
-                ⇄
+                🏦
 
               </div>
 
@@ -503,15 +503,14 @@
 
               <h3>
 
-                Transfer Money
+               Bank Transfer 
 
               </h3>
 
               <p>
 
-                Send money to another
-
-                MufasirPay user.
+                Do Bank Transfer form
+                mufasirpay to other banks
 
               </p>
 
