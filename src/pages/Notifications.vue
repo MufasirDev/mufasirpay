@@ -1,23 +1,33 @@
 
 <template>
+  
   <div class="notifications-page">
     <header class="page-header">
-      <div>
-        <p class="eyebrow">MU FASIRPAY UPDATES</p>
-        <h1>Notifications</h1>
-        <p class="subtitle">
-          Stay informed about your wallet and transactions.
-        </p>
-      </div>
+  <div>
+    
+    <p class="eyebrow">MUFASIRPAY UPDATES</p>
+    <h1>Notifications</h1>
+    <p class="subtitle">
+      Stay informed about your wallet and transactions.
+    </p>
+  </div>
 
-      <button
-        class="mark-all-button"
-        :disabled="unreadCount === 0 || loading"
-        @click="markAllAsRead"
-      >
-        Mark all as read
-      </button>
-    </header>
+  <button
+    class="mark-all-button"
+    :disabled="unreadCount === 0 || loading"
+    @click="markAllAsRead"
+  >
+    Mark all as read
+  </button>
+  <button
+      type="button"
+      class="back-button"
+      @click="goToDashboard"
+    >
+      ← Back to Dashboard
+    </button>
+
+</header>
 
     <section class="summary-card">
       <div class="summary-icon">🔔</div>
@@ -130,6 +140,7 @@
     >
       {{ loadingMore ? 'Loading...' : 'Load more notifications' }}
     </button>
+  
 
   </div>
 </template>
@@ -137,6 +148,13 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { supabase } from '../lib/supabase'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+function goToDashboard() {
+  router.push('/dashboard')
+}
 
 type NotificationCategory =
   | 'wallet'
@@ -843,5 +861,25 @@ onUnmounted(() => {
     width: 30px;
     height: 30px;
   }
+}
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 10px 15px;
+  border: 1px solid #cfe4d8;
+  border-radius: 10px;
+  background: #fff;
+  color: #08784f;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.back-button:hover {
+  background: #eafaf2;
+  transform: translateX(-3px);
 }
 </style>
