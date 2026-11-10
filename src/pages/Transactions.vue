@@ -40,7 +40,9 @@
         </button>
       </div>
     </aside>
-
+    <P>Mufasirpay we go beyound just banking
+      feel free to transa
+    </P>
     <div v-if="sidebarOpen" class="overlay" @click="sidebarOpen = false"></div>
 
     <button type="button" class="menu-btn" @click="sidebarOpen = !sidebarOpen">

@@ -1,14 +1,11 @@
+
 <template>
   <div class="bills-page">
 
     <!-- SIDEBAR -->
-    <aside
-      class="sidebar"
-      :class="{ open: sidebarOpen }"
-    >
+    <aside class="sidebar" :class="{ open: sidebarOpen }">
       <div class="sidebar-brand">
         <div class="brand-icon">M</div>
-
         <div>
           <h1>MufasirPay</h1>
           <span>Digital Banking</span>
@@ -16,77 +13,44 @@
       </div>
 
       <nav class="sidebar-nav">
-
-        <button
-          class="nav-item"
-          type="button"
-          @click="go('/dashboard')"
-        >
+        <button class="nav-item" type="button" @click="go('/dashboard')">
           <span class="nav-icon">⌂</span>
           <span>Dashboard</span>
         </button>
 
-        <button
-          class="nav-item"
-          type="button"
-          @click="go('/wallet')"
-        >
+        <button class="nav-item" type="button" @click="go('/wallet')">
           <span class="nav-icon">₦</span>
           <span>Wallet</span>
         </button>
 
-        <button
-          class="nav-item"
-          type="button"
-          @click="go('/transfer')"
-        >
+        <button class="nav-item" type="button" @click="go('/transfer')">
           <span class="nav-icon">⇄</span>
           <span>Transfer</span>
         </button>
 
-        <button
-          class="nav-item"
-          type="button"
-          @click="go('/airtime')"
-        >
+        <button class="nav-item" type="button" @click="go('/airtime')">
           <span class="nav-icon">☎</span>
           <span>Airtime & Data</span>
         </button>
 
-        <button
-          class="nav-item active"
-          type="button"
-        >
+        <button class="nav-item active" type="button">
           <span class="nav-icon">▣</span>
           <span>Pay Bills</span>
         </button>
 
-        <button
-          class="nav-item"
-          type="button"
-          @click="go('/transactions')"
-        >
+        <button class="nav-item" type="button" @click="go('/transactions')">
           <span class="nav-icon">☷</span>
           <span>Transactions</span>
         </button>
 
-        <button
-          class="nav-item"
-          type="button"
-          @click="go('/profile')"
-        >
+        <button class="nav-item" type="button" @click="go('/profile')">
           <span class="nav-icon">◉</span>
           <span>Profile</span>
         </button>
-
       </nav>
 
       <div class="sidebar-bottom">
-        <button
-          class="logout-side-btn"
-          type="button"
-          @click="logout"
-        >
+        <button class="logout-side-btn" type="button" @click="logout">
           <span class="nav-icon">↪</span>
           <span>Logout</span>
         </button>
@@ -114,69 +78,38 @@
 
       <!-- TOPBAR -->
       <header class="topbar">
-
         <div class="topbar-title">
           <h2>Pay Bills</h2>
-
-          <p>
-            Pay your bills directly from your wallet
-          </p>
+          <p>Pay your bills directly from your wallet</p>
         </div>
 
         <div class="topbar-user">
-
-          <div class="top-avatar">
-            {{ initials }}
-          </div>
+          <div class="top-avatar">{{ initials }}</div>
 
           <div class="top-user-info">
-            <strong>
-              {{ fullName || 'User' }}
-            </strong>
-
-            <span>
-              {{ email }}
-            </span>
+            <strong>{{ fullName || 'User' }}</strong>
+            <span>{{ email }}</span>
           </div>
-
         </div>
-
       </header>
-
 
       <main class="content">
 
         <!-- BALANCE -->
         <section class="balance-card">
-
           <div>
             <p>Available Balance</p>
-
-            <h1>
-              ₦{{ formattedBalance }}
-            </h1>
+            <h1>₦{{ formattedBalance }}</h1>
           </div>
 
-          <div class="wallet-icon">
-            ₦
-          </div>
-
+          <div class="wallet-icon">₦</div>
         </section>
-
 
         <!-- INTRO -->
         <section class="intro">
-
-          <h1>
-            Bill Payments
-          </h1>
-
-          <p>
-            Choose the bill you want to pay.
-          </p>
-
+          <h1>Bill Payments</h1>
+          <p>Choose the bill you want to pay.</p>
         </section>
-
 
         <!-- BILL TYPES -->
         <section class="bill-grid">
@@ -184,102 +117,75 @@
           <button
             type="button"
             class="bill-card"
-            :class="{
-              selected:
-                selectedBill === 'electricity'
-            }"
-            @click="
-              selectBill('electricity')
-            "
+            :class="{ selected: selectedBill === 'electricity' }"
+            @click="selectBill('electricity')"
           >
-
-            <div
-              class="bill-icon electricity"
-            >
-              ⚡
-            </div>
+            <div class="bill-icon electricity">⚡</div>
 
             <div class="bill-info">
-
-              <h3>
-                Electricity
-              </h3>
-
-              <p>
-                AEDC prepaid & postpaid
-              </p>
-
+              <h3>Electricity</h3>
+              <p>Pay electricity bills across supported providers</p>
             </div>
 
-            <span class="arrow">
-              →
-            </span>
-
+            <span class="arrow">→</span>
           </button>
-
 
           <button
             type="button"
             class="bill-card"
-            :class="{
-              selected:
-                selectedBill === 'cable'
-            }"
-            @click="
-              selectBill('cable')
-            "
+            :class="{ selected: selectedBill === 'cable' }"
+            @click="selectBill('cable')"
           >
-
-            <div
-              class="bill-icon cable"
-            >
-              ▣
-            </div>
+            <div class="bill-icon cable">▣</div>
 
             <div class="bill-info">
-
-              <h3>
-                Cable TV
-              </h3>
-
-              <p>
-                DStv & GOtv subscriptions
-              </p>
-
+              <h3>Cable TV</h3>
+              <p>DStv, GOtv and StarTimes subscriptions</p>
             </div>
 
-            <span class="arrow">
-              →
-            </span>
+            <span class="arrow">→</span>
+          </button>
 
+          <button
+            type="button"
+            class="bill-card"
+            :class="{ selected: selectedBill === 'education' }"
+            @click="selectBill('education')"
+          >
+            <div class="bill-icon cable">📚</div>
+
+            <div class="bill-info">
+              <h3>Education</h3>
+              <p>WAEC Result Checker and Registration PINs</p>
+            </div>
+
+            <span class="arrow">→</span>
           </button>
 
         </section>
 
-
         <!-- PAYMENT FORM -->
-        <section
-          v-if="selectedBill"
-          class="payment-card"
-        >
+        <section v-if="selectedBill" class="payment-card">
 
           <div class="payment-header">
-
             <div>
-
               <h2>
                 {{
-                  selectedBill ===
-                  'electricity'
+                  selectedBill === 'electricity'
                     ? 'Electricity Payment'
-                    : 'Cable TV Payment'
+                    : selectedBill === 'cable'
+                      ? 'Cable TV Payment'
+                      : 'WAEC PIN Purchase'
                 }}
               </h2>
 
               <p>
-                Verify the customer before making payment.
+                {{
+                  selectedBill === 'education'
+                    ? 'Select the WAEC product and enter your phone number.'
+                    : 'Enter the required details to continue.'
+                }}
               </p>
-
             </div>
 
             <button
@@ -289,156 +195,138 @@
             >
               Change
             </button>
-
           </div>
 
-
           <!-- ELECTRICITY -->
-          <template
-            v-if="
-              selectedBill ===
-              'electricity'
-            "
-          >
+          <template v-if="selectedBill === 'electricity'">
 
             <div class="field">
+              <label>Electricity Provider</label>
 
-              <label>
-                Electricity Provider
-              </label>
-
-              <select
-                v-model="provider"
-              >
-
-                <option value="">
-                  Select electricity provider
-                </option>
-
-                <option value="aedc">
-                  AEDC - Abuja Electricity
-                </option>
-
+              <select v-model="provider" @change="handleProviderChange">
+                <option value="">Select electricity provider</option>
+                <option value="aedc">AEDC - Abuja Electricity</option>
+                <option value="ikedc">IKEDC - Ikeja Electric</option>
+                <option value="ekedc">EKEDC - Eko Electric</option>
+                <option value="ibedc">IBEDC - Ibadan Electric</option>
+                <option value="phed">PHED - Port Harcourt Electric</option>
+                <option value="jed">JED - Jos Electric</option>
+                <option value="kedco">KEDCO - Kano Electric</option>
+                <option value="kaedco">KAEDCO - Kaduna Electric</option>
+                <option value="eedc">EEDC - Enugu Electric</option>
+                <option value="bedc">BEDC - Benin Electric</option>
+                <option value="yedc">YEDC - Yola Electric</option>
+                <option value="aba">Aba Power</option>
               </select>
-
             </div>
 
-
             <div class="field">
+              <label>Meter Type</label>
 
-              <label>
-                Meter Type
-              </label>
-
-              <select
-                v-model="meterType"
-              >
-
-                <option value="">
-                  Select meter type
-                </option>
-
-                <option value="prepaid">
-                  Prepaid
-                </option>
-
-                <option value="postpaid">
-                  Postpaid
-                </option>
-               
+              <select v-model="meterType" @change="clearVerification">
+                <option value="">Select meter type</option>
+                <option value="prepaid">Prepaid</option>
+                <option value="postpaid">Postpaid</option>
               </select>
-
             </div>
 
           </template>
 
-
-          <!-- CABLE -->
-          <template v-else>
+          <!-- CABLE TV -->
+          <template v-else-if="selectedBill === 'cable'">
 
             <div class="field">
+              <label>TV Provider</label>
 
-              <label>
-                TV Provider
-              </label>
-
-              <select
-                v-model="provider"
-                @change="
-                  loadVariations
-                "
-              >
-
-                <option value="">
-                  Select TV provider
-                </option>
-
-                <option value="dstv">
-                  DStv
-                </option>
-
-                <option value="gotv">
-                  GOtv
-                </option>
-
-                <option value="startimes">
-                  Startimes Subscription 
-                </option>
-
-                <option value="showmax">
-                  ShowMax
-                </option>
-
+              <select v-model="provider" @change="handleProviderChange">
+                <option value="">Select TV provider</option>
+                <option value="dstv">DStv</option>
+                <option value="gotv">GOtv</option>
+                <option value="startimes">StarTimes</option>
               </select>
-
             </div>
 
-
-            <div
-              v-if="provider"
-              class="field"
-            >
-
-              <label>
-                Subscription Plan
-              </label>
+            <div v-if="provider" class="field">
+              <label>Subscription Plan</label>
 
               <select
                 v-model="variationCode"
+                @change="handleVariationChange"
               >
-
-                <option value="">
-                  Select subscription plan
-                </option>
+                <option value="">Select subscription plan</option>
 
                 <option
                   v-for="variation in variations"
-                  :key="
-                    variation.variation_code
-                  "
-                  :value="
-                    variation.variation_code
-                  "
+                  :key="variation.variation_code"
+                  :value="variation.variation_code"
                 >
+                  {{ variation.name }}
                   {{
-                    variation.name
+                    getVariationAmount(variation)
+                      ? ' - ₦' + getVariationAmount(variation).toLocaleString('en-NG')
+                      : ''
                   }}
                 </option>
-
               </select>
-
             </div>
 
           </template>
 
+          <!-- EDUCATION / WAEC -->
+          <template v-else-if="selectedBill === 'education'">
 
-          <!-- CUSTOMER NUMBER -->
-          <div class="field">
+            <div class="field">
+              <label>WAEC Service</label>
 
+              <select v-model="provider" @change="handleProviderChange">
+                <option value="">Select WAEC service</option>
+                <option value="waec">WAEC Result Checker PIN</option>
+                <option value="waec-registration">WAEC Registration PIN</option>
+              </select>
+            </div>
+
+            <div v-if="provider" class="field">
+              <label>Product / PIN Option</label>
+
+              <select
+                v-model="variationCode"
+                @change="handleVariationChange"
+              >
+                <option value="">Select WAEC product</option>
+
+                <option
+                  v-for="variation in variations"
+                  :key="variation.variation_code"
+                  :value="variation.variation_code"
+                >
+                  {{ variation.name }}
+                  {{
+                    getVariationAmount(variation)
+                      ? ' - ₦' + getVariationAmount(variation).toLocaleString('en-NG')
+                      : ''
+                  }}
+                </option>
+              </select>
+            </div>
+
+            <div class="notice">
+              <span>ℹ</span>
+              <p>
+                WAEC PIN purchases do not require meter or smartcard
+                verification. Make sure your phone number is correct.
+              </p>
+            </div>
+
+          </template>
+
+          <!-- CUSTOMER NUMBER: ELECTRICITY AND CABLE -->
+          <div
+            v-if="selectedBill !== 'education'"
+            class="field"
+          >
             <label>
               {{
-                selectedBill ===
-                'electricity'
+                selectedBill === 'electricity'
                   ? 'Meter Number'
                   : 'Smartcard / IUC Number'
               }}
@@ -449,31 +337,25 @@
               type="text"
               inputmode="numeric"
               :placeholder="
-                selectedBill ===
-                'electricity'
+                selectedBill === 'electricity'
                   ? 'Enter meter number'
                   : 'Enter smartcard / IUC number'
               "
+              @input="clearVerification"
             />
 
             <small>
               {{
-                selectedBill ===
-                'electricity'
+                selectedBill === 'electricity'
                   ? 'Enter the customer meter number.'
                   : 'Enter the customer smartcard/IUC number.'
               }}
             </small>
-
           </div>
-
 
           <!-- PHONE -->
           <div class="field">
-
-            <label>
-              Phone Number
-            </label>
+            <label>Phone Number</label>
 
             <input
               v-model="phone"
@@ -482,17 +364,19 @@
               maxlength="11"
               placeholder="08012345678"
               @input="
-                phone = phone
-                  .replace(/\D/g, '')
-                  .slice(0, 11)
+                phone = phone.replace(/\D/g, '').slice(0, 11);
+                clearVerification()
               "
             />
 
+            <small>
+              Enter the phone number associated with this purchase.
+            </small>
           </div>
 
-
-          <!-- VERIFY -->
+          <!-- VERIFY: ELECTRICITY AND CABLE ONLY -->
           <button
+            v-if="selectedBill !== 'education'"
             type="button"
             class="verify-btn"
             :disabled="isVerifying"
@@ -505,19 +389,14 @@
             }}
           </button>
 
-
           <!-- VERIFIED -->
           <div
             v-if="verifiedCustomer"
             class="verified-card"
           >
-
-            <div class="verified-icon">
-              ✓
-            </div>
+            <div class="verified-icon">✓</div>
 
             <div>
-
               <strong>
                 {{
                   verifiedCustomer.Customer_Name ||
@@ -526,24 +405,15 @@
                 }}
               </strong>
 
-              <p>
-                Customer verification successful.
-              </p>
-
+              <p>Customer verification successful.</p>
             </div>
-
           </div>
-
 
           <!-- AMOUNT -->
           <div class="field">
-
-            <label>
-              Amount
-            </label>
+            <label>Amount</label>
 
             <div class="amount-input">
-
               <span>₦</span>
 
               <input
@@ -551,56 +421,46 @@
                 type="number"
                 min="100"
                 placeholder="Enter amount"
+                :disabled="selectedBill !== 'electricity'"
               />
-
             </div>
 
+            <small v-if="selectedBill !== 'electricity'">
+              Amount is automatically set from the selected provider plan.
+            </small>
           </div>
 
-
-          <!-- QUICK AMOUNTS -->
-          <div class="field">
-
-            <label>
-              Quick Amount
-            </label>
+          <!-- QUICK AMOUNTS: ELECTRICITY ONLY -->
+          <div
+            v-if="selectedBill === 'electricity'"
+            class="field"
+          >
+            <label>Quick Amount</label>
 
             <div class="quick-grid">
-
               <button
                 v-for="option in quickAmounts"
                 :key="option"
                 type="button"
-                :class="{
-                  active:
-                    amount === option
-                }"
-                @click="
-                  amount = option
-                "
+                :class="{ active: amount === option }"
+                @click="amount = option"
               >
                 ₦{{ option.toLocaleString('en-NG') }}
               </button>
-
             </div>
-
           </div>
-
 
           <!-- NOTICE -->
           <div class="notice">
-
-            <span>
-              ℹ
-            </span>
+            <span>ℹ</span>
 
             <p>
-              Your wallet amount is reserved during
-              processing. Failed transactions are refunded.
+              Your wallet amount is reserved during processing.
+              Failed transactions confirmed by the provider are refunded.
+              Pending transactions remain under review until their status
+              is confirmed.
             </p>
-
           </div>
-
 
           <!-- ERROR -->
           <div
@@ -610,79 +470,85 @@
             ⚠ {{ errorMessage }}
           </div>
 
-
           <!-- SUCCESS -->
           <div
             v-if="successMessage"
             class="message success-message"
           >
-
             ✓ {{ successMessage }}
 
-            <div
-              v-if="token"
-              class="token-box"
-            >
-
-              <span>
-                Electricity Token
-              </span>
-
-              <strong>
-                {{ token }}
-              </strong>
-
+            <!-- ELECTRICITY TOKEN -->
+            <div v-if="token" class="token-box">
+              <span>Electricity Token</span>
+              <strong>{{ token }}</strong>
             </div>
 
-          </div>
+            <!-- PURCHASED CODE -->
+            <div v-if="purchaseCode" class="token-box">
+              <span>
+                {{
+                  selectedBill === 'education'
+                    ? 'Purchased WAEC PIN'
+                    : 'Purchased Code'
+                }}
+              </span>
 
+              <strong>{{ purchaseCode }}</strong>
+            </div>
+
+            <!-- WAEC CARDS -->
+            <div
+              v-for="(card, index) in purchasedCards"
+              :key="index"
+              class="token-box"
+            >
+              <span>WAEC Card {{ index + 1 }}</span>
+
+              <strong v-if="card.serial_number">
+                Serial Number: {{ card.serial_number }}
+              </strong>
+
+              <strong v-if="card.pin">
+                PIN: {{ card.pin }}
+              </strong>
+            </div>
+          </div>
 
           <!-- PAY -->
           <button
             type="button"
             class="pay-btn"
-            :disabled="
-              isProcessing ||
-              !verifiedCustomer
-            "
+            :disabled="!canPay"
             @click="payBill"
           >
             {{
               isProcessing
                 ? 'Processing Payment...'
-                : 'Pay Bill'
+                : selectedBill === 'education'
+                  ? 'Purchase WAEC PIN'
+                  : 'Pay Bill'
             }}
           </button>
 
         </section>
 
-
         <!-- EMPTY -->
-        <section
-          v-else
-          class="empty-card"
-        >
+        <section v-else class="empty-card">
+          <div class="empty-icon">▣</div>
 
-          <div class="empty-icon">
-            ▣
-          </div>
-
-          <h2>
-            Select a bill category
-          </h2>
+          <h2>Select a bill category</h2>
 
           <p>
-            Choose Electricity or Cable TV to get started.
+            Choose Electricity, Cable TV or Education to get started.
           </p>
-
         </section>
 
       </main>
-
     </div>
-
   </div>
 </template>
+
+
 
 
 <script setup lang="ts">
@@ -701,113 +567,53 @@ import {
   supabase
 } from '../lib/supabase'
 
+const router = useRouter()
 
-const router =
-  useRouter()
-
-
-// ----------------------------------
 // SIDEBAR
-// ----------------------------------
-
-const sidebarOpen =
-  ref(false)
-
+const sidebarOpen = ref(false)
 
 function go(path: string) {
-
   sidebarOpen.value = false
-
   router.push(path)
-
 }
-
 
 async function logout() {
-
   try {
-
     await supabase.auth.signOut()
-
     router.push('/login')
-
   } catch (error) {
-
-    console.error(
-      'Logout error:',
-      error
-    )
-
+    console.error('Logout error:', error)
   }
-
 }
 
-
-// ----------------------------------
 // USER
-// ----------------------------------
+const fullName = ref('')
+const email = ref('')
+const phone = ref('')
+const balance = ref(0)
 
-const fullName =
-  ref('')
-
-const email =
-  ref('')
-
-const phone =
-  ref('')
-
-const balance =
-  ref(0)
-
-
-// ----------------------------------
 // BILL STATE
-// ----------------------------------
+const selectedBill = ref('')
+const provider = ref('')
+const meterType = ref('')
+const customerNumber = ref('')
+const variationCode = ref('')
+const amount = ref<number | null>(100)
 
-const selectedBill =
-  ref('')
+const variations = ref<any[]>([])
+const verifiedCustomer = ref<any | null>(null)
 
-const provider =
-  ref('')
+const token = ref('')
+const purchaseCode = ref('')
+const purchasedCards = ref<any[]>([])
 
-const meterType =
-  ref('')
+const isVerifying = ref(false)
+const isProcessing = ref(false)
 
-const customerNumber =
-  ref('')
+const errorMessage = ref('')
+const successMessage = ref('')
 
-const variationCode =
-  ref('')
-
-const amount =
-  ref<number | null>(100)
-
-const variations =
-  ref<any[]>([])
-
-const verifiedCustomer =
-  ref<any | null>(null)
-
-const token =
-  ref('')
-
-const isVerifying =
-  ref(false)
-
-const isProcessing =
-  ref(false)
-
-const errorMessage =
-  ref('')
-
-const successMessage =
-  ref('')
-
-
-// ----------------------------------
 // QUICK AMOUNTS
-// ----------------------------------
-
 const quickAmounts = [
   500,
   1000,
@@ -817,159 +623,137 @@ const quickAmounts = [
   20000
 ]
 
-
-// ----------------------------------
 // FORMATTED BALANCE
-// ----------------------------------
-
-const formattedBalance =
-  computed(() => {
-
-    return balance.value.toLocaleString(
-      'en-NG',
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }
-    )
-
+const formattedBalance = computed(() => {
+  return balance.value.toLocaleString('en-NG', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   })
+})
 
-
-// ----------------------------------
 // INITIALS
-// ----------------------------------
+const initials = computed(() => {
+  const name = fullName.value.trim()
 
-const initials =
-  computed(() => {
+  if (!name) return 'M'
 
-    const name =
-      fullName.value.trim()
+  const parts = name.split(/\s+/)
 
-    if (!name) {
-      return 'M'
-    }
-
-    const parts =
-      name.split(/\s+/)
-
-    if (parts.length === 1) {
-
-      return parts[0]
-        .charAt(0)
-        .toUpperCase()
-
-    }
-
-    return (
-      parts[0]
-        .charAt(0) +
-      parts[parts.length - 1]
-        .charAt(0)
-    ).toUpperCase()
-
-  })
-
-
-// ----------------------------------
-// LOAD USER
-// ----------------------------------
-
-async function loadUser() {
-
-  try {
-
-    const {
-      data: {
-        session
-      }
-    } =
-      await supabase.auth.getSession()
-
-
-    if (!session?.user) {
-
-      router.push('/login')
-
-      return
-
-    }
-
-
-    email.value =
-      session.user.email || ''
-
-
-    const {
-      data: profile
-    } =
-      await supabase
-        .from('profiles')
-        .select(
-          'full_name, phone'
-        )
-        .eq(
-          'id',
-          session.user.id
-        )
-        .single()
-
-
-    fullName.value =
-      profile?.full_name || ''
-
-    phone.value =
-      profile?.phone || ''
-
-
-    const {
-      data: wallet
-    } =
-      await supabase
-        .from('wallets')
-        .select('balance')
-        .eq(
-          'user_id',
-          session.user.id
-        )
-        .single()
-
-
-    balance.value =
-      Number(
-        wallet?.balance || 0
-      )
-
-  } catch (error) {
-
-    console.error(
-      'Load user error:',
-      error
-    )
-
+  if (parts.length === 1) {
+    return parts[0].charAt(0).toUpperCase()
   }
 
+  return (
+    parts[0].charAt(0) +
+    parts[parts.length - 1].charAt(0)
+  ).toUpperCase()
+})
+
+// SELECTED VARIATION
+const selectedVariation = computed(() => {
+  return variations.value.find(
+    item => item.variation_code === variationCode.value
+  ) || null
+})
+
+// CAN PAY
+const canPay = computed(() => {
+  if (isProcessing.value || !provider.value) {
+    return false
+  }
+
+  const paymentAmount = Number(amount.value)
+
+  if (
+    !Number.isFinite(paymentAmount) ||
+    paymentAmount < 100 ||
+    paymentAmount > balance.value
+  ) {
+    return false
+  }
+
+  if (selectedBill.value === 'electricity') {
+    return Boolean(
+      meterType.value &&
+      customerNumber.value.trim() &&
+      verifiedCustomer.value
+    )
+  }
+
+  if (selectedBill.value === 'cable') {
+    return Boolean(
+      variationCode.value &&
+      customerNumber.value.trim() &&
+      verifiedCustomer.value
+    )
+  }
+
+  if (selectedBill.value === 'education') {
+    return Boolean(
+      variationCode.value &&
+      phone.value.trim().length >= 10
+    )
+  }
+
+  return false
+})
+
+// GET VARIATION AMOUNT
+function getVariationAmount(variation: any): number {
+  return Number(
+    variation?.variation_amount ??
+    variation?.amount ??
+    0
+  )
 }
 
-
-// ----------------------------------
-// GET EDGE FUNCTION ERROR
-// ----------------------------------
-
-async function getFunctionError(
-  error: any
-) {
-
+// LOAD USER
+async function loadUser() {
   try {
+    const {
+      data: { session }
+    } = await supabase.auth.getSession()
 
+    if (!session?.user) {
+      router.push('/login')
+      return
+    }
+
+    email.value = session.user.email || ''
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, phone')
+      .eq('id', session.user.id)
+      .single()
+
+    fullName.value = profile?.full_name || ''
+
+    if (!phone.value) {
+      phone.value = profile?.phone || ''
+    }
+
+    const { data: wallet } = await supabase
+      .from('wallets')
+      .select('balance')
+      .eq('user_id', session.user.id)
+      .single()
+
+    balance.value = Number(wallet?.balance || 0)
+
+  } catch (error) {
+    console.error('Load user error:', error)
+  }
+}
+
+// GET EDGE FUNCTION ERROR
+async function getFunctionError(error: any) {
+  try {
     if (
       error?.context &&
-      typeof error.context.json ===
-        'function'
+      typeof error.context.json === 'function'
     ) {
-
-      const body =
-        await error.context.json()
+      const body = await error.context.json()
 
       return (
         body?.message ||
@@ -977,581 +761,411 @@ async function getFunctionError(
         error?.message ||
         'Request failed.'
       )
-
     }
-
   } catch {
     // Use fallback
   }
 
-  return (
-    error?.message ||
-    'Request failed.'
-  )
-
+  return error?.message || 'Request failed.'
 }
 
-
-// ----------------------------------
 // SET FUNCTION AUTH
-// ----------------------------------
-
 async function setFunctionAuth() {
-
   const {
-    data: {
-      session
-    }
-  } =
-    await supabase.auth.getSession()
+    data: { session }
+  } = await supabase.auth.getSession()
 
-
-  if (
-    !session?.access_token
-  ) {
-
+  if (!session?.access_token) {
     await supabase.auth.signOut()
-
     router.push('/login')
 
     throw new Error(
       'Your session has expired. Please log in again.'
     )
-
   }
 
-
-  supabase.functions.setAuth(
-    session.access_token
-  )
-
+  supabase.functions.setAuth(session.access_token)
 }
 
+// CLEAR VERIFICATION
+function clearVerification() {
+  verifiedCustomer.value = null
+  errorMessage.value = ''
+}
 
-// ----------------------------------
+// CLEAR PURCHASE RESULT
+function clearPurchaseResult() {
+  token.value = ''
+  purchaseCode.value = ''
+  purchasedCards.value = []
+  successMessage.value = ''
+}
+
 // SELECT BILL
-// ----------------------------------
+function selectBill(bill: string) {
+  selectedBill.value = bill
 
-function selectBill(
-  bill: string
-) {
+  provider.value = ''
+  meterType.value = ''
+  customerNumber.value = ''
+  variationCode.value = ''
 
-  selectedBill.value =
-    bill
+  variations.value = []
+  verifiedCustomer.value = null
 
-  provider.value =
-    ''
+  amount.value = 100
 
-  meterType.value =
-    ''
+  clearPurchaseResult()
 
-  customerNumber.value =
-    ''
-
-  variationCode.value =
-    ''
-
-  variations.value =
-    []
-
-  verifiedCustomer.value =
-    null
-
-  token.value =
-    ''
-
-  errorMessage.value =
-    ''
-
-  successMessage.value =
-    ''
-
+  errorMessage.value = ''
 }
 
-
-// ----------------------------------
-// RESET
-// ----------------------------------
-
+// RESET FORM
 function resetForm() {
+  selectedBill.value = ''
 
-  selectedBill.value =
-    ''
+  provider.value = ''
+  meterType.value = ''
+  customerNumber.value = ''
+  variationCode.value = ''
 
-  provider.value =
-    ''
+  variations.value = []
+  verifiedCustomer.value = null
 
-  meterType.value =
-    ''
+  amount.value = 100
 
-  customerNumber.value =
-    ''
+  clearPurchaseResult()
 
-  variationCode.value =
-    ''
-
-  variations.value =
-    []
-
-  verifiedCustomer.value =
-    null
-
-  token.value =
-    ''
-
-  errorMessage.value =
-    ''
-
-  successMessage.value =
-    ''
-
+  errorMessage.value = ''
 }
 
+// PROVIDER CHANGE
+async function handleProviderChange() {
+  variationCode.value = ''
+  variations.value = []
 
-// ----------------------------------
-// LOAD TV VARIATIONS
-// ----------------------------------
+  verifiedCustomer.value = null
 
-async function loadVariations() {
-
-  variations.value =
-    []
-
-  variationCode.value =
-    ''
-
-  if (!provider.value) {
-    return
-  }
-
+  clearPurchaseResult()
 
   errorMessage.value = ''
 
+  if (selectedBill.value !== 'electricity') {
+    amount.value = null
+    await loadVariations()
+  } else {
+    amount.value = 100
+  }
+}
+
+// VARIATION CHANGE
+function handleVariationChange() {
+  clearPurchaseResult()
+  errorMessage.value = ''
+
+  verifiedCustomer.value = null
+
+  if (
+    selectedBill.value === 'cable' ||
+    selectedBill.value === 'education'
+  ) {
+    const price = getVariationAmount(
+      selectedVariation.value
+    )
+
+    amount.value = price > 0 ? price : null
+  }
+}
+
+// LOAD VARIATIONS
+async function loadVariations() {
+  if (!provider.value) return
 
   try {
-
     await setFunctionAuth()
-
 
     const {
       data,
       error
-    } =
-      await supabase.functions.invoke(
-        'bills',
-        {
-          body: {
-            action:
-              'variations',
-
-            provider:
-              provider.value
-          }
-        }
-      )
-
+    } = await supabase.functions.invoke('bills', {
+      body: {
+        action: 'variations',
+        provider: provider.value
+      }
+    })
 
     if (error) {
-
-      throw new Error(
-        await getFunctionError(error)
-      )
-
+      throw new Error(await getFunctionError(error))
     }
 
-
-    if (
-      !data?.success
-    ) {
-
+    if (!data?.success) {
       throw new Error(
-        data?.message ||
-        'Unable to load TV plans.'
+        data?.message || 'Unable to load available plans.'
       )
-
     }
 
+    variations.value = data.variations || []
 
-    variations.value =
-      data.variations || []
-
+    if (!variations.value.length) {
+      throw new Error(
+        'No plans are currently available for this provider.'
+      )
+    }
 
   } catch (error: any) {
-
-    console.error(
-      'Variation error:',
-      error
-    )
+    console.error('Variation error:', error)
 
     errorMessage.value =
       error?.message ||
-      'Unable to load subscription plans.'
-
+      'Unable to load available plans.'
   }
-
 }
 
-
-// ----------------------------------
 // VERIFY CUSTOMER
-// ----------------------------------
-
 async function verifyCustomer() {
-
   errorMessage.value = ''
-
   successMessage.value = ''
 
-  verifiedCustomer.value =
-    null
+  verifiedCustomer.value = null
 
-  token.value = ''
-
+  clearPurchaseResult()
 
   if (!provider.value) {
-
-    errorMessage.value =
-      'Please select a provider.'
-
+    errorMessage.value = 'Please select a provider.'
     return
-
   }
 
-
   if (
-    selectedBill.value ===
-      'electricity' &&
+    selectedBill.value === 'electricity' &&
     !meterType.value
   ) {
-
     errorMessage.value =
       'Please select prepaid or postpaid.'
-
     return
-
   }
 
-
   if (
-    selectedBill.value ===
-      'cable' &&
+    selectedBill.value === 'cable' &&
     !variationCode.value
   ) {
-
     errorMessage.value =
       'Please select a subscription plan.'
-
     return
-
   }
 
-
-  if (
-    !customerNumber.value.trim()
-  ) {
-
+  if (!customerNumber.value.trim()) {
     errorMessage.value =
       'Please enter the customer number.'
-
     return
-
   }
 
-
-  isVerifying.value =
-    true
-
+  isVerifying.value = true
 
   try {
-
     await setFunctionAuth()
-
 
     const {
       data,
       error
-    } =
-      await supabase.functions.invoke(
-        'bills',
-        {
-          body: {
-
-            action:
-              'verify',
-
-            category:
-              selectedBill.value,
-
-            provider:
-              provider.value,
-
-            customerNumber:
-              customerNumber.value.trim(),
-
-            meterType:
-              meterType.value
-
-          }
-        }
-      )
-
+    } = await supabase.functions.invoke('bills', {
+      body: {
+        action: 'verify',
+        category: selectedBill.value,
+        provider: provider.value,
+        customerNumber: customerNumber.value.trim(),
+        meterType: meterType.value
+      }
+    })
 
     if (error) {
-
-      throw new Error(
-        await getFunctionError(error)
-      )
-
+      throw new Error(await getFunctionError(error))
     }
 
-
-    if (
-      !data?.success
-    ) {
-
+    if (!data?.success) {
       throw new Error(
-        data?.message ||
-        'Customer verification failed.'
+        data?.message || 'Customer verification failed.'
       )
-
     }
 
-
-    verifiedCustomer.value =
-      data.verification || {}
-
+    verifiedCustomer.value = data.verification || {}
 
   } catch (error: any) {
-
-    console.error(
-      'Verification error:',
-      error
-    )
+    console.error('Verification error:', error)
 
     errorMessage.value =
       error?.message ||
       'Unable to verify customer.'
 
   } finally {
-
-    isVerifying.value =
-      false
-
+    isVerifying.value = false
   }
-
 }
 
-
-// ----------------------------------
 // PAY BILL
-// ----------------------------------
-
 async function payBill() {
-
   errorMessage.value = ''
-
   successMessage.value = ''
 
-  token.value = ''
+  clearPurchaseResult()
 
+  const paymentAmount = Number(amount.value)
 
-  const paymentAmount =
-    Number(amount.value)
+  if (!provider.value) {
+    errorMessage.value = 'Please select a provider.'
+    return
+  }
 
-
+  // Electricity and cable require verification.
   if (
+    selectedBill.value !== 'education' &&
     !verifiedCustomer.value
   ) {
-
     errorMessage.value =
       'Please verify the customer first.'
-
     return
-
   }
 
-
+  // Education requires a selected WAEC variation.
   if (
-    !Number.isFinite(
-      paymentAmount
-    ) ||
-    paymentAmount < 100
-  ) {
-
-    errorMessage.value =
-      'Minimum payment amount is ₦100.'
-
-    return
-
-  }
-
-
-  if (
-    paymentAmount >
-    balance.value
-  ) {
-
-    errorMessage.value =
-      'Insufficient wallet balance.'
-
-    return
-
-  }
-
-
-  if (
-    selectedBill.value ===
-      'cable' &&
+    selectedBill.value === 'education' &&
     !variationCode.value
   ) {
-
     errorMessage.value =
-      'Please select a subscription plan.'
-
+      'Please select a WAEC product.'
     return
-
   }
 
+  // Cable requires a selected subscription plan.
+  if (
+    selectedBill.value === 'cable' &&
+    !variationCode.value
+  ) {
+    errorMessage.value =
+      'Please select a subscription plan.'
+    return
+  }
 
-  isProcessing.value =
-    true
+  if (
+    !Number.isFinite(paymentAmount) ||
+    paymentAmount < 100
+  ) {
+    errorMessage.value =
+      'Minimum payment amount is ₦100.'
+    return
+  }
 
+  if (paymentAmount > balance.value) {
+    errorMessage.value =
+      'Insufficient wallet balance.'
+    return
+  }
+
+  if (
+    selectedBill.value === 'education' &&
+    phone.value.trim().length < 10
+  ) {
+    errorMessage.value =
+      'Please enter a valid phone number.'
+    return
+  }
+
+  if (
+    selectedBill.value !== 'education' &&
+    !customerNumber.value.trim()
+  ) {
+    errorMessage.value =
+      'Please enter the customer number.'
+    return
+  }
+
+  isProcessing.value = true
 
   try {
-
     await setFunctionAuth()
-
 
     const {
       data,
       error
-    } =
-      await supabase.functions.invoke(
-        'bills',
-        {
-          body: {
+    } = await supabase.functions.invoke('bills', {
+      body: {
+        action: 'pay',
 
-            action:
-              'pay',
+        category: selectedBill.value,
 
-            category:
-              selectedBill.value,
+        provider: provider.value,
 
-            provider:
-              provider.value,
+        customerNumber:
+          selectedBill.value === 'education'
+            ? phone.value.trim()
+            : customerNumber.value.trim(),
 
-            customerNumber:
-              customerNumber.value.trim(),
+        phone: phone.value.trim(),
 
-            phone:
-              phone.value,
+        amount: paymentAmount,
 
-            amount:
-              paymentAmount,
+        meterType: meterType.value,
 
-            meterType:
-              meterType.value,
-
-            variationCode:
-              variationCode.value
-
-          }
-        }
-      )
-
+        variationCode: variationCode.value
+      }
+    })
 
     if (error) {
-
-      throw new Error(
-        await getFunctionError(error)
-      )
-
+      throw new Error(await getFunctionError(error))
     }
 
-
-    if (
-      !data?.success
-    ) {
-
+    if (!data?.success) {
       throw new Error(
-        data?.message ||
-        'Bill payment failed.'
+        data?.message || 'Bill payment failed.'
       )
-
     }
 
-
-    if (
-      data.status ===
-        'pending'
-    ) {
-
+    if (data.status === 'pending') {
       successMessage.value =
         data.message ||
-        'Your bill payment is being processed.'
+        'Your payment is being processed. Please check the transaction status later.'
 
       await loadUser()
-
       return
-
     }
 
-
     successMessage.value =
-      data.message ||
-      'Bill payment successful.'
+      data.message || 'Payment successful.'
 
+    token.value = data.token || ''
 
-    token.value =
-      data.token ||
-      ''
+    purchaseCode.value =
+      data.purchased_code || ''
 
+    purchasedCards.value =
+      Array.isArray(data.cards)
+        ? data.cards
+        : []
 
     await loadUser()
 
-
-    if (
-      selectedBill.value ===
-        'electricity'
-    ) {
-
-      verifiedCustomer.value =
-        null
-
-    }
+    verifiedCustomer.value = null
 
   } catch (error: any) {
-
-    console.error(
-      'Bill payment error:',
-      error
-    )
+    console.error('Bill payment error:', error)
 
     errorMessage.value =
       error?.message ||
-      'Unable to complete bill payment.'
+      'Unable to complete payment.'
+
+    await loadUser()
 
   } finally {
-
-    isProcessing.value =
-      false
-
+    isProcessing.value = false
   }
-
 }
 
-
-// ----------------------------------
 // START
-// ----------------------------------
-
 onMounted(() => {
-
   loadUser()
-
 })
 
 </script>
+
 
 <style scoped>
 
