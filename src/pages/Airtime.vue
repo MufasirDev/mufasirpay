@@ -25,11 +25,13 @@
       :class="{ open: sidebarOpen }"
     >
       <div class="brand">
-        <div class="brand-mark">M</div>
+        <div class="brand-icon">
+          <img src="/mufasirpay.logo.png" alt="MufasirPay Logo" />
+        </div>
 
-        <div>
-          <h2>MufasirPay</h2>
-          <span>Digital Banking</span>
+        <div class="brand-text">
+          <strong>Mufasir<span>Pay</span></strong>
+          <small>Digital Banking</small>
         </div>
       </div>
 
@@ -810,167 +812,65 @@ onMounted(async () => {
 
 .brand {
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
+  justify-content: flex-start;
   gap: 12px;
-
-  padding:
-    5px 8px 28px;
-
-  margin-bottom: 14px;
+  padding: 6px 8px 26px;
+  margin-bottom: 16px;
 }
 
-.brand-mark {
-  width: 46px;
-  height: 46px;
-
-  flex-shrink: 0;
-
-  border-radius: 15px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #e1fff1 0%,
-      #77e7aa 42%,
-      #18b875 72%,
-      #08784f 100%
-    );
-
-  color: #063b2b;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  position: relative;
-
-  overflow: hidden;
-
-  font-size: 24px;
-  font-weight: 950;
-
-  letter-spacing: -2px;
-
-  box-shadow:
-    0 10px 25px
-    rgba(
-      60,
-      220,
-      145,
-      0.22
-    ),
-
-    inset 0 1px 0
-    rgba(
-      255,
-      255,
-      255,
-      0.75
-    );
-}
-
-/* Main white brand stroke */
-.brand-mark::before {
-  content: "";
-
-  position: absolute;
-
-  width: 28px;
-  height: 10px;
-
-  top: 6px;
-  left: 8px;
-
-  border-radius: 20px;
-
-  border-top:
-    4px solid
-    rgba(
-      255,
-      255,
-      255,
-      0.9
-    );
-
-  transform:
-    rotate(-25deg);
-
-  opacity: 0.9;
-}
-
-/* Lower green accent */
-.brand-mark::after {
-  content: "";
-
-  position: absolute;
-
-  width: 17px;
-  height: 8px;
-
-  right: 5px;
-  bottom: 7px;
-
-  border-radius: 8px;
-
-  background:
-    #046b47;
-
-  transform:
-    rotate(-30deg);
-
-  box-shadow:
-    0 2px 5px
-    rgba(
-      0,
-      0,
-      0,
-      0.12
-    );
-}
-
-.brand-mark {
-  text-shadow:
-    0 1px 0
-    rgba(
-      255,
-      255,
-      255,
-      0.7
-    );
-}
-
-.brand > div:last-child {
-  min-width: 0;
-}
-
-.brand h2 {
-  margin: 0;
-
-  color: white;
-
-  font-size: 18px;
-
-  line-height: 1.05;
-
-  letter-spacing:
-    -0.45px;
-}
-
-.brand h2::first-letter {
-  color: white;
-}
-
-.brand span {
+.brand-icon {
+  flex: 0 0 50px;
+  width: 50px;
+  height: 50px;
   display: block;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  border-radius: 13px;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(14, 170, 105, 0.25);
+}
 
-  margin-top: 5px;
+.brand-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: transparent;
+}
 
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.brand-text strong {
+  display: block;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.4px;
+  color: white;
+}
+
+.brand-text strong span {
+  color: #62df9b;
+}
+
+.brand-text small {
+  display: block;
+  margin-top: 4px;
   color: #9bc1b1;
-
   font-size: 10px;
-
-  letter-spacing:
-    0.35px;
+  font-weight: 500;
+  letter-spacing: 0.25px;
 }
 
 

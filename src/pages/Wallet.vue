@@ -8,14 +8,18 @@
       :class="{ open: sidebarOpen }"
     >
       <div class="sidebar-brand">
-        <div class="brand-icon">M</div>
+        <div class="sidebar-brand">
+        <div class="brand-icon">
+  <img src="/mufasirpay.logo.png" alt="MufasirPay Logo" />
+</div>
+
 
         <div>
           <h1>MufasirPay</h1>
           <span>Digital Banking</span>
         </div>
       </div>
-
+</div>
       <nav class="sidebar-nav">
         <button
           type="button"
@@ -926,7 +930,7 @@ onMounted(() => {
 
   z-index: 1000;
 
-  padding: 24px 15px;
+  padding: 25px 15px;
 
   box-shadow:
     8px 0 30px
@@ -948,85 +952,36 @@ onMounted(() => {
   gap: 12px;
 
   padding:
-    6px 8px 26px;
+    3px 6px 8px;
 
   margin-bottom: 16px;
 
   border-bottom: none;
 }
 
+/* TRANSPARENT MUFASIRPAY LOGO */
+
 .brand-icon {
-  width: 44px;
-  height: 44px;
-
-  border-radius: 14px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #d8fff0 0%,
-      #62df9b 45%,
-      #10a96a 100%
-    );
-
-  color: #063b2b;
-
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  position: relative;
-
-  font-size: 23px;
-  font-weight: 900;
-
-  box-shadow:
-    0 8px 20px
-    rgba(68, 218, 147, 0.18);
-
-  overflow: hidden;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
 }
 
-.brand-icon::before {
-  content: "";
-
-  position: absolute;
-
-  width: 19px;
-  height: 8px;
-
-  background: white;
-
-  border-radius: 8px;
-
-  transform:
-    rotate(-45deg)
-    translate(-2px, -5px);
-
-  opacity: 0.95;
-}
-
-.brand-icon::after {
-  content: "";
-
-  position: absolute;
-
-  width: 14px;
-  height: 7px;
-
-  right: 5px;
-  bottom: 8px;
-
-  border-radius: 4px;
-
-  background: #08784f;
-
-  transform:
-    rotate(-32deg);
-}
-
-.brand-icon {
-  isolation: isolate;
+.brand-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: transparent;
+  mix-blend-mode: screen;
 }
 
 .sidebar-brand h1 {

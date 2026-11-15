@@ -5,12 +5,18 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" :class="{ open: sidebarOpen }">
       <div class="sidebar-brand">
-        <div class="brand-icon">M</div>
+        <div class="sidebar-brand">
+        <div class="brand-icon">
+  <img src="/mufasirpay.logo.png" alt="MufasirPay Logo" />
+</div>
+
         <div>
           <h1>MufasirPay</h1>
           <span>Digital Banking</span>
         </div>
       </div>
+      </div>
+
 
       <nav class="sidebar-nav">
         <button class="nav-item" type="button" @click="go('/dashboard')">
@@ -1237,7 +1243,7 @@ onMounted(() => {
 
 .sidebar-brand {
   padding:
-    5px 8px 28px;
+    2px 6px 8px;
 
   display: flex;
   align-items: center;
@@ -1249,111 +1255,29 @@ onMounted(() => {
   border-bottom: none;
 }
 
+/* TRANSPARENT MUFASIRPAY LOGO */
+
 .brand-icon {
-  width: 46px;
-  height: 46px;
-
+  width: 50px;
+  height: 50px;
   flex-shrink: 0;
-
-  border-radius: 15px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #e1fff1 0%,
-      #77e7aa 42%,
-      #18b875 72%,
-      #08784f 100%
-    );
-
-  color: #063b2b;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  position: relative;
-
-  overflow: hidden;
-
-  font-size: 24px;
-
-  font-weight: 950;
-
-  letter-spacing: -2px;
-
-  box-shadow:
-    0 10px 25px
-    rgba(
-      60,
-      220,
-      145,
-      0.22
-    ),
-
-    inset 0 1px 0
-    rgba(
-      255,
-      255,
-      255,
-      0.75
-    );
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
 }
 
-.brand-icon::before {
-  content: "";
-
-  position: absolute;
-
-  width: 28px;
-  height: 10px;
-
-  top: 6px;
-  left: 8px;
-
-  border-radius: 20px;
-
-  border-top:
-    4px solid
-    rgba(
-      255,
-      255,
-      255,
-      0.9
-    );
-
-  transform:
-    rotate(-25deg);
-
-  opacity: 0.9;
-}
-
-.brand-icon::after {
-  content: "";
-
-  position: absolute;
-
-  width: 17px;
-  height: 8px;
-
-  right: 5px;
-  bottom: 7px;
-
-  border-radius: 8px;
-
-  background: #046b47;
-
-  transform:
-    rotate(-30deg);
-
-  box-shadow:
-    0 2px 5px
-    rgba(
-      0,
-      0,
-      0,
-      0.12
-    );
+.brand-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: transparent;
+  mix-blend-mode: screen;
 }
 
 .sidebar-brand h1 {
