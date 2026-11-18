@@ -203,19 +203,26 @@
 
         <div class="topbar-actions">
 
-          <button
+  <!-- DARK / LIGHT MODE -->
+  <button
+    type="button"
+    class="theme-toggle-btn"
+    @click="toggleTheme"
+    :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+    :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+  >
+    <span v-if="isDark">☀️</span>
+    <span v-else>🌙</span>
+  </button>
 
-            type="button"
-
-            class="icon-button"
-
-            title="Notifications"
-
-          >
-
-            ♧
-
-          </button>
+  <!-- NOTIFICATIONS -->
+  <button
+    type="button"
+    class="icon-button"
+    title="Notifications"
+  >
+    ♧
+  </button>
 
           <div class="user-avatar">
 
@@ -941,6 +948,7 @@
 </template>
 
 <script setup lang="ts">
+import { useTheme } from '../composables/useTheme'
 import {
   ref,
   computed,
@@ -951,6 +959,7 @@ import { supabase } from '../lib/supabase'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const { isDark, toggleTheme } = useTheme()
 
 const loading = ref(true)
 const fullName = ref('')
@@ -2587,5 +2596,173 @@ onMounted(() => {
   .transaction-status.processing {
     color: #3879c9;
   }
+}
+
+
+/* =========================
+   DARK MODE - DASHBOARD
+========================= */
+
+.dashboard,
+.dashboard * {
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+/* MAIN BACKGROUND */
+
+:global(html[data-theme="dark"] .dashboard) {
+  background: #101b18 !important;
+  color: #f1f7f3 !important;
+}
+
+/* HEADINGS */
+
+:global(html[data-theme="dark"] .dashboard .topbar h1),
+:global(html[data-theme="dark"] .dashboard .section-header h2),
+:global(html[data-theme="dark"] .dashboard .stat-card h3),
+:global(html[data-theme="dark"] .dashboard .action-card h3),
+:global(html[data-theme="dark"] .dashboard .transaction h4),
+:global(html[data-theme="dark"] .dashboard .transaction-right strong),
+:global(html[data-theme="dark"] .dashboard .empty-state h3) {
+  color: #f1f7f3 !important;
+}
+
+/* SECONDARY TEXT */
+
+:global(html[data-theme="dark"] .dashboard .welcome-small),
+:global(html[data-theme="dark"] .dashboard .topbar-subtitle),
+:global(html[data-theme="dark"] .dashboard .stat-card p),
+:global(html[data-theme="dark"] .dashboard .action-card p),
+:global(html[data-theme="dark"] .dashboard .transaction p),
+:global(html[data-theme="dark"] .dashboard .empty-state p) {
+  color: #a7b8ae !important;
+}
+
+/* CARDS */
+
+:global(html[data-theme="dark"] .dashboard .stat-card),
+:global(html[data-theme="dark"] .dashboard .action-card),
+:global(html[data-theme="dark"] .dashboard .transactions),
+:global(html[data-theme="dark"] .dashboard .empty-state),
+:global(html[data-theme="dark"] .dashboard .loading),
+:global(html[data-theme="dark"] .dashboard .icon-button) {
+  background: #1b2923 !important;
+  border-color: #2b4035 !important;
+  color: #f1f7f3 !important;
+}
+
+/* TRANSACTIONS */
+
+:global(html[data-theme="dark"] .dashboard .transaction) {
+  border-bottom-color: #2b4035 !important;
+}
+
+:global(html[data-theme="dark"] .dashboard .transaction-icon),
+:global(html[data-theme="dark"] .dashboard .empty-icon),
+:global(html[data-theme="dark"] .dashboard .action-icon) {
+  background: #263e32 !important;
+  color: #63dfa0 !important;
+}
+
+/* ACTION ARROWS */
+
+:global(html[data-theme="dark"] .dashboard .action-arrow) {
+  color: #a7b8ae !important;
+}
+
+/* ANALYTICS */
+
+:global(html[data-theme="dark"] .dashboard .analytics-summary-card),
+:global(html[data-theme="dark"] .dashboard .analytics-chart-card) {
+  background: #1b2923 !important;
+  border-color: #2b4035 !important;
+}
+
+:global(html[data-theme="dark"] .dashboard .analytics-summary-card > strong),
+:global(html[data-theme="dark"] .dashboard .analytics-chart-heading h3) {
+  color: #f1f7f3 !important;
+}
+
+:global(html[data-theme="dark"] .dashboard .analytics-summary-top),
+:global(html[data-theme="dark"] .dashboard .analytics-chart-heading p),
+:global(html[data-theme="dark"] .dashboard .analytics-legend),
+:global(html[data-theme="dark"] .dashboard .analytics-footnote) {
+  color: #a7b8ae !important;
+}
+
+:global(html[data-theme="dark"] .dashboard .analytics-range select) {
+  background: #1b2923 !important;
+  color: #f1f7f3 !important;
+  border-color: #385344 !important;
+}
+
+:global(html[data-theme="dark"] .dashboard .chart-bars) {
+  border-bottom-color: #2b4035 !important;
+  background: repeating-linear-gradient(
+    to top,
+    transparent 0,
+    transparent 37px,
+    #293a31 38px,
+    transparent 39px
+  ) !important;
+}
+
+:global(html[data-theme="dark"] .dashboard .category-track) {
+  background: #293a31 !important;
+}
+
+:global(html[data-theme="dark"] .dashboard .category-row-top) {
+  color: #b7c8be !important;
+}
+
+:global(html[data-theme="dark"] .dashboard .category-row-top strong) {
+  color: #f1f7f3 !important;
+}
+
+/* MOBILE NAVIGATION */
+
+:global(html[data-theme="dark"] .dashboard .mobile-bottom-nav) {
+  background: rgba(16, 27, 24, 0.97) !important;
+  border-top-color: #2b4035 !important;
+}
+
+:global(html[data-theme="dark"] .dashboard .mobile-nav-item) {
+  color: #a7b8ae !important;
+}
+
+:global(html[data-theme="dark"] .dashboard .mobile-nav-item.active) {
+  background: #263e32 !important;
+  color: #63dfa0 !important;
+}
+
+/* THEME BUTTON */
+
+.theme-toggle-btn {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #e0ebe5;
+  background: white;
+  border-radius: 13px;
+  color: #4d695c;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(13, 66, 45, 0.04);
+  transition: all 0.25s ease;
+}
+
+.theme-toggle-btn:hover {
+  transform: translateY(-2px);
+}
+
+:global(html[data-theme="dark"] .dashboard .theme-toggle-btn) {
+  background: #1b2923 !important;
+  border-color: #2b4035 !important;
+  color: #f1f7f3 !important;
 }
 </style>

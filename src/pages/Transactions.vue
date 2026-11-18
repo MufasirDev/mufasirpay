@@ -455,9 +455,216 @@ function closeReceipt() {
 }
 
 function printReceipt() {
-  window.print()
-}
+  if (!selectedTransaction.value) {
+    alert('Please select a transaction first.')
+    return
+  }
 
+  const receiptElement = document.getElementById('printable-receipt')
+
+  if (!receiptElement) {
+    alert('Receipt could not be found. Please try again.')
+    return
+  }
+
+  // Open a separate window for this receipt only.
+  const printWindow = window.open(
+    '',
+    '_blank',
+    'width=800,height=900'
+  )
+
+  if (!printWindow) {
+    alert('Please allow pop-ups to print your receipt.')
+    return
+  }
+
+  const receiptHTML = receiptElement.innerHTML
+
+  printWindow.document.open()
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>MufasirPay Transaction Receipt</title>
+
+        <meta charset="UTF-8" />
+
+        <style>
+          * {
+            box-sizing: border-box;
+          }
+
+          body {
+            margin: 0;
+            padding: 25px;
+            background: #ffffff;
+            color: #13231d;
+            font-family: Arial, Helvetica, sans-serif;
+          }
+
+          .receipt-paper {
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 25px;
+            background: #ffffff;
+          }
+
+          .receipt-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+          }
+
+          .receipt-brand-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: #087b51;
+            color: white;
+            font-weight: 900;
+            font-size: 23px;
+          }
+
+          .receipt-brand strong,
+          .receipt-brand small {
+            display: block;
+          }
+
+          .receipt-brand strong {
+            color: #063b2b;
+            font-size: 17px;
+          }
+
+          .receipt-brand small {
+            margin-top: 3px;
+            color: #82918a;
+            font-size: 10px;
+          }
+
+          .receipt-status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            background: #f1f5f3;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: capitalize;
+          }
+
+          .receipt-status.successful {
+            background: #e5f9ef;
+            color: #087f52;
+          }
+
+          .receipt-status.pending {
+            background: #fff6df;
+            color: #b17916;
+          }
+
+          .receipt-status.failed {
+            background: #fff0ed;
+            color: #c45244;
+          }
+
+          .receipt-status.processing {
+            background: #eaf2ff;
+            color: #3267a8;
+          }
+
+          .receipt-label {
+            margin: 18px 0 5px;
+            color: #7b8b84;
+            font-size: 12px;
+          }
+
+          .receipt-amount {
+            margin: 0;
+            color: #123c2b;
+            font-size: 29px;
+            overflow-wrap: anywhere;
+          }
+
+          .receipt-divider {
+            border-top: 1px dashed #d7e4dc;
+            margin: 22px 0 12px;
+          }
+
+          .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+            padding: 11px 0;
+            border-bottom: 1px solid #eef3ef;
+            font-size: 11px;
+          }
+
+          .receipt-row span {
+            color: #82918a;
+            flex: 0 0 36%;
+          }
+
+          .receipt-row strong {
+            color: #253c31;
+            text-align: right;
+            overflow-wrap: anywhere;
+          }
+
+          .receipt-reference {
+            max-width: 60%;
+          }
+
+          .receipt-footer {
+            margin: 22px 0 0;
+            text-align: center;
+            color: #82918a;
+            font-size: 11px;
+          }
+
+          @page {
+            size: A4;
+            margin: 15mm;
+          }
+
+          @media print {
+            body {
+              padding: 0;
+            }
+
+            .receipt-paper {
+              max-width: 100%;
+              padding: 0;
+            }
+          }
+        </style>
+      </head>
+
+      <body>
+        <div class="receipt-paper">
+          ${receiptHTML}
+        </div>
+      </body>
+    </html>
+  `)
+
+  printWindow.document.close()
+  printWindow.focus()
+
+  printWindow.addEventListener(
+    'afterprint',
+    () => printWindow.close(),
+    { once: true }
+  )
+
+  printWindow.print()
+}
 // MONTHLY GROUPS
 const groupedTransactions = computed(() => {
   const groups = new Map<
@@ -2140,14 +2347,6 @@ onMounted(() => {
 .receipt-secondary { background:#e8f1eb; color:#28553f; }
 .receipt-primary { background:#087b51; color:white; }
 @media(max-width:500px) { .receipt-overlay { padding:10px; } .receipt-modal { max-height:calc(100vh - 20px); } .receipt-paper { margin:0 10px; padding:20px 15px; } .receipt-actions { padding:14px; } .receipt-amount { font-size:25px; } }
-@media print {
-  body * { visibility:hidden !important; }
-  .receipt-overlay, .receipt-overlay * { visibility:visible !important; }
-  .receipt-overlay { position:absolute; inset:0; display:block; padding:0; background:white; overflow:visible; }
-  .receipt-modal { width:100%; max-height:none; overflow:visible; box-shadow:none; border-radius:0; background:white; }
-  .receipt-top, .receipt-actions, .no-print { display:none !important; }
-  .receipt-paper { margin:0; border:0; box-shadow:none; }
-  @page { margin:15mm; }
-}
+
 
 </style>

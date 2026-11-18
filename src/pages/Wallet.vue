@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <div class="wallet-page">
 
@@ -113,6 +113,8 @@
 
   
     <main class="main-content">
+      <div class="wallet-theme-row">
+</div>
 
       <!-- BALANCE -->
       <section class="balance-card">
@@ -323,7 +325,6 @@
 </template>
 
 <script setup lang="ts">
-
 import {
   ref,
   computed,
@@ -341,7 +342,6 @@ import {
 import Paystack from '@paystack/inline-js'
 
 const router = useRouter()
-
 
 const sidebarOpen = ref(false)
 
@@ -883,7 +883,7 @@ onMounted(() => {
 })
 
 </script>
-
+ 
 <style scoped>
 
 * {
@@ -2066,4 +2066,7 @@ onMounted(() => {
   }
 }
 
-</style>
+
+
+
+</style >

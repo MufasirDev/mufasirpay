@@ -267,7 +267,9 @@
     </main>
     <footer>
       <div class="footer-logo">
-        <div class="logo-icon">M</div>
+        <div class="brand-icon">
+          <img src="/mufasirpay.logo.png" alt="MufasirPay Logo" />
+        </div>
         <span>Mufasir<span>Pay</span></span>
       </div>
 

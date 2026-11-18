@@ -20,3 +20,21 @@ entrypoint = "./functions/bank-transfer/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/bank-transfer/*.html" ]
+[api]
+port = 55000
+
+[db]
+port = 55001
+shadow_port = 55002
+
+[studio]
+port = 55003
+
+[local_smtp]
+port = 55004
+
+[analytics]
+port = 55007
+
+[db.pooler]
+port = 55009
